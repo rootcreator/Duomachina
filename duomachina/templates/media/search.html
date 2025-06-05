@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Results - DuoMachina{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Search Form -->
+    <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <form action="{% url 'media:search' %}" method="GET" class="card">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <input type="text" name="q" class="form-control form-control-lg" 
+                                   value="{{ query }}" placeholder="Search for content...">
+                        </div>
+                        <div class="col-md-4">
+                            <select name="type" class="form-select form-select-lg">
+                                <option value="all" {% if content_type == 'all' %}selected{% endif %}>All Content</option>
+                                <option value="comic" {% if content_type == 'comic' %}selected{% endif %}>Comics</option>
+                                <option value="magazine" {% if content_type == 'magazine' %}selected{% endif %}>Magazines</option>
+                                <option value="podcast" {% if content_type == 'podcast' %}selected{% endif %}>Podcasts</option>
+                                <option value="media" {% if content_type == 'media' %}selected{% endif %}>Media</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if query %}
+    <!-- Search Results -->
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Search Results for "{{ query }}"</h2>
+
+            {% if not comics and not magazines and not podcasts and not media %}
+            <div class="alert alert-info">
+                No results found for your search.
+            </div>
+            {% endif %}
+
+            {% if comics %}
+            <section class="mb-5">
+                <h3 class="mb-3">Comics</h3>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                    {% for comic in comics %}
+                    <div class="col">
+                        <div class="card h-100 content-card">
+                            {% if comic.cover_image %}
+                            <img src="{{ comic.cover_image.url }}" class="card-img-top" alt="{{ comic.title }}">
+                            {% else %}
+                            <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="bi bi-book fs-1"></i>
+                            </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ comic.title }}</h5>
+                                <p class="card-text text-muted">By {{ comic.artist.username }}</p>
+                                <a href="{% url 'media:api-media-detail' comic.pk %}" class="btn btn-outline-primary btn-sm">Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            {% if magazines %}
+            <section class="mb-5">
+                <h3 class="mb-3">Magazines</h3>
+                <div class="row row-cols-1 g-4">
+                    {% for magazine in magazines %}
+                    <div class="col">
+                        <div class="card content-card">
+                            <div class="row g-0">
+                                <div class="col-md-3">
+                                    {% if magazine.cover_image %}
+                                    <img src="{{ magazine.cover_image.url }}" class="img-fluid rounded-start h-100 object-fit-cover" alt="{{ magazine.title }}">
+                                    {% else %}
+                                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center h-100" style="min-height: 200px;">
+                                        <i class="bi bi-journal-richtext fs-1"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ magazine.title }}</h5>
+                                        <p class="card-text">{{ magazine.description|truncatewords:30 }}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="text-muted">
+                                                <small>By {{ magazine.author.username }}</small>
+                                            </div>
+                                            <a href="{% url 'media:api-magazine-detail' magazine.pk %}" class="btn btn-primary btn-sm">Read Article</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            {% if podcasts %}
+            <section class="mb-5">
+                <h3 class="mb-3">Podcasts</h3>
+                <div class="row row-cols-1 g-4">
+                    {% for podcast in podcasts %}
+                    <div class="col">
+                        <div class="card content-card">
+                            <div class="row g-0">
+                                <div class="col-md-3">
+                                    {% if podcast.cover_image %}
+                                    <img src="{{ podcast.cover_image.url }}" class="img-fluid rounded-start h-100 object-fit-cover" alt="{{ podcast.title }}">
+                                    {% else %}
+                                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center h-100" style="min-height: 200px;">
+                                        <i class="bi bi-mic fs-1"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ podcast.title }}</h5>
+                                        <p class="card-text">{{ podcast.description|truncatewords:30 }}</p>
+                                        {% if podcast.audio_file %}
+                                        <div class="mb-3">
+                                            <audio controls class="w-100">
+                                                <source src="{{ podcast.audio_file.url }}" type="audio/mpeg">
+                                                Your browser does not support the audio element.
+                                            </audio>
+                                        </div>
+                                        {% endif %}
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="text-muted">
+                                                <small>By {{ podcast.author.username }}</small>
+                                            </div>
+                                            <div>
+                                                <a href="{% url 'media:api-podcast-detail' podcast.pk %}" class="btn btn-outline-primary btn-sm">
+                                                    <i class="bi bi-download"></i> Download
+                                                </a>
+                                                <a href="{% url 'media:api-podcast-detail' podcast.pk %}" class="btn btn-primary btn-sm">
+                                                    <i class="bi bi-collection-play"></i> Episodes
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            {% if media %}
+            <section class="mb-5">
+                <h3 class="mb-3">Media</h3>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                    {% for item in media %}
+                    <div class="col">
+                        <div class="card h-100 content-card">
+                            <div class="card-img-top bg-dark text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                                {% if item.file_type == 'video' %}
+                                <i class="bi bi-film fs-1"></i>
+                                {% elif item.file_type == 'audio' %}
+                                <i class="bi bi-music-note-beamed fs-1"></i>
+                                {% else %}
+                                <i class="bi bi-file-earmark fs-1"></i>
+                                {% endif %}
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ item.title }}</h5>
+                                <p class="card-text text-muted">{{ item.get_file_type_display }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">By {{ item.artist.username }}</small>
+                                    <a href="{% url 'media:api-media-detail' item.pk %}" class="btn btn-outline-primary btn-sm">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

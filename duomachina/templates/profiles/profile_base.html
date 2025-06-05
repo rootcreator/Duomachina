@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <!-- Profile Header -->
+    <div class="card border-0 rounded-3 bg-gradient-primary text-white mb-4">
+        <div class="card-body py-5">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" alt="{{ user.username }}" 
+                         class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+                    {% else %}
+                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center"
+                         style="width: 120px; height: 120px;">
+                        <i class="bi bi-person-fill display-4"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col">
+                    <h1 class="display-5 mb-0">{{ user.username }}</h1>
+                    <p class="lead mb-0">{% block profile_type %}{% endblock %}</p>
+                    {% if user.website %}
+                    <a href="{{ user.website }}" class="text-white text-decoration-none" target="_blank">
+                        <i class="bi bi-link-45deg"></i> {{ user.website }}
+                    </a>
+                    {% endif %}
+                </div>
+                {% if request.user == user %}
+                <div class="col-auto">
+                    <a href="{% url 'users:edit_profile' %}" class="btn btn-light">
+                        <i class="bi bi-pencil"></i> Edit Profile
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Navigation -->
+    <ul class="nav nav-tabs mb-4">
+        {% block profile_nav %}{% endblock %}
+    </ul>
+
+    <!-- Profile Content -->
+    {% block profile_content %}{% endblock %}
+</div>
+{% endblock %} 

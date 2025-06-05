@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Content{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="h2 mb-4">Create Content</h1>
+    
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        {% for type in content_types %}
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="display-1 mb-3">
+                        {% if type.id == 'comic' %}
+                        <i class="bi bi-book text-primary"></i>
+                        {% elif type.id == 'magazine' %}
+                        <i class="bi bi-journal-richtext text-primary"></i>
+                        {% elif type.id == 'podcast' %}
+                        <i class="bi bi-mic text-primary"></i>
+                        {% else %}
+                        <i class="bi bi-file-earmark-plus text-primary"></i>
+                        {% endif %}
+                    </div>
+                    <h5 class="card-title">{{ type.name }}</h5>
+                    <p class="card-text text-muted">Create a new {{ type.name|lower }}</p>
+                    <a href="{% url 'media:create_'|add:type.id %}" class="btn btn-primary">
+                        Get Started
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ podcast.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'media:podcast' %}">Podcasts</a></li>
+            <li class="breadcrumb-item active">{{ podcast.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Podcast Content Column -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            {% if podcast.cover_image %}
+                            <img src="{{ podcast.cover_image.url }}" class="img-fluid rounded" alt="{{ podcast.title }}">
+                            {% else %}
+                            <div class="ratio ratio-1x1 bg-light rounded d-flex align-items-center justify-content-center">
+                                <i class="bi bi-mic display-1 text-muted"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <h1 class="h2 mb-3">{{ podcast.title }}</h1>
+                            <div class="mb-4">
+                                {% if podcast.category %}
+                                <span class="badge bg-primary me-2">{{ podcast.category.name }}</span>
+                                {% endif %}
+                                <span class="badge bg-secondary">{{ podcast.release_date|date }}</span>
+                            </div>
+                            <p class="lead mb-4">{{ podcast.description }}</p>
+                            <div class="d-flex align-items-center mb-3">
+                                <div>
+                                    <small class="text-muted d-block">Host</small>
+                                    <strong>{{ podcast.author.get_full_name|default:podcast.author.username }}</strong>
+                                </div>
+                            </div>
+                            {% if podcast.tags.exists %}
+                            <div class="mb-4">
+                                {% for tag in podcast.tags.all %}
+                                <span class="badge bg-light text-dark me-1">#{{ tag.name }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Audio Player -->
+                    <div class="mt-4">
+                        <h4 class="mb-3">Listen</h4>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <audio controls class="w-100">
+                                    <source src="{{ podcast.audio_file.url }}" type="audio/mpeg">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Comments</h4>
+                    {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'media:add_podcast_comment' podcast.id %}" class="mb-4">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <textarea class="form-control" name="text" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Post Comment</button>
+                    </form>
+                    {% else %}
+                    <p class="text-muted">Please <a href="{% url 'users:login' %}">login</a> to post comments.</p>
+                    {% endif %}
+
+                    {% for comment in comments %}
+                    <div class="mb-3">
+                        <div class="d-flex">
+                            {% if comment.user.avatar %}
+                            <img src="{{ comment.user.avatar.url }}" class="rounded-circle me-2" width="40" height="40">
+                            {% else %}
+                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2"
+                                 style="width: 40px; height: 40px;">
+                                <i class="bi bi-person-fill text-white"></i>
+                            </div>
+                            {% endif %}
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">{{ comment.user.username }}</h6>
+                                    <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+                                </div>
+                                <p class="mb-0">{{ comment.text }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No comments yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Host Info -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">About the Host</h5>
+                    <div class="d-flex align-items-center mb-3">
+                        {% if podcast.author.avatar %}
+                        <img src="{{ podcast.author.avatar.url }}" class="rounded-circle me-3" width="64" height="64">
+                        {% else %}
+                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3"
+                             style="width: 64px; height: 64px;">
+                            <i class="bi bi-person-fill text-white h3 mb-0"></i>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <h6 class="mb-1">{{ podcast.author.get_full_name|default:podcast.author.username }}</h6>
+                            <p class="text-muted mb-0">
+                                <i class="bi bi-geo-alt-fill"></i> {{ podcast.author.location|default:"Location not specified" }}
+                            </p>
+                        </div>
+                    </div>
+                    <p class="mb-3">{{ podcast.author.bio|default:"No bio available"|truncatewords:30 }}</p>
+                    <a href="{% url 'users:artist_profile' podcast.author.username %}" class="btn btn-outline-primary btn-sm">
+                        View Profile
+                    </a>
+                </div>
+            </div>
+
+            <!-- Podcast Stats -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Stats</h5>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-eye-fill text-primary me-2"></i>
+                                <div>
+                                    <div class="small text-muted">Views</div>
+                                    <strong>{{ podcast.views }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-star-fill text-warning me-2"></i>
+                                <div>
+                                    <div class="small text-muted">Rating</div>
+                                    <strong>{{ podcast.podcast_ratings.count }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-chat-fill text-info me-2"></i>
+                                <div>
+                                    <div class="small text-muted">Comments</div>
+                                    <strong>{{ podcast.podcast_comments.count }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-calendar-event text-success me-2"></i>
+                                <div>
+                                    <div class="small text-muted">Published</div>
+                                    <strong>{{ podcast.created_at|date }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rating Section -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Rate this Podcast</h5>
+                    {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'media:add_podcast_rating' podcast.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <select name="rating" class="form-select" required>
+                                <option value="">Select rating...</option>
+                                <option value="1">1 Star</option>
+                                <option value="2">2 Stars</option>
+                                <option value="3">3 Stars</option>
+                                <option value="4">4 Stars</option>
+                                <option value="5">5 Stars</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Rating</button>
+                    </form>
+                    {% else %}
+                    <p class="text-muted">Please <a href="{% url 'users:login' %}">login</a> to rate this podcast.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

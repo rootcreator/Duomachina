@@ -1,0 +1,92 @@
+{% extends 'media/create_base.html' %}
+
+{% block form_content %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    {% if form.errors %}
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li><small>{{ error }}</small></li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    <div class="mb-3">
+        <label for="title" class="form-label">Title *</label>
+        <input type="text" name="title" class="form-control" id="title" required>
+    </div>
+    
+    <div class="mb-3">
+        <label for="description" class="form-label">Description *</label>
+        <textarea name="description" class="form-control" id="description" rows="4" required></textarea>
+    </div>
+    
+    <div class="mb-3">
+        <label for="category" class="form-label">Category *</label>
+        <select name="category" class="form-select" id="category" required>
+            <option value="">Select a category</option>
+            {% for category in categories %}
+            <option value="{{ category.id }}">{{ category.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <div class="mb-3">
+        <label for="audio_file" class="form-label">Audio File *</label>
+        <input type="file" name="audio_file" class="form-control" id="audio_file" accept="audio/*" required>
+        <div class="form-text">Supported formats: MP3, WAV, M4A</div>
+    </div>
+    
+    <div class="mb-3">
+        <label for="cover_image" class="form-label">Cover Image</label>
+        <input type="file" name="cover_image" class="form-control" id="cover_image" accept="image/*">
+        <div class="form-text">Recommended size: 1400x1400 pixels</div>
+    </div>
+    
+    <div class="mb-3">
+        <label for="release_date" class="form-label">Release Date *</label>
+        <input type="date" name="release_date" class="form-control" id="release_date" required>
+    </div>
+    
+    <div class="mb-3">
+        <label for="tags" class="form-label">Tags</label>
+        <input type="text" name="tags" class="form-control" id="tags" placeholder="Enter tags separated by commas">
+        <div class="form-text">Example: technology, interviews, education</div>
+    </div>
+    
+    <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-primary">Create Podcast</button>
+        <a href="{% url 'media:create_content' %}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}
+
+{% block tips_content %}
+<ul class="list-unstyled">
+    <li class="mb-2">
+        <i class="bi bi-check-circle-fill text-success me-2"></i>
+        Use a clear, searchable title
+    </li>
+    <li class="mb-2">
+        <i class="bi bi-check-circle-fill text-success me-2"></i>
+        Write a compelling description
+    </li>
+    <li class="mb-2">
+        <i class="bi bi-check-circle-fill text-success me-2"></i>
+        Upload high-quality audio files
+    </li>
+    <li class="mb-2">
+        <i class="bi bi-check-circle-fill text-success me-2"></i>
+        Include a professional cover image
+    </li>
+    <li class="mb-2">
+        <i class="bi bi-check-circle-fill text-success me-2"></i>
+        Add relevant tags for discoverability
+    </li>
+</ul>
+{% endblock %} 

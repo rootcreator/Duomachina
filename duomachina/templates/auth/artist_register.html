@@ -1,0 +1,101 @@
+{% extends 'auth/auth_base.html' %}
+
+{% block auth_title %}Create Artist Account{% endblock %}
+{% block auth_subtitle %}Join DuoMachina as a content creator{% endblock %}
+
+{% block auth_content %}
+<form method="post" action="{% url 'users:artist_register' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    {% if form.errors %}
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li><small>{{ error }}</small></li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" name="username" class="form-control" id="username" required>
+        <div class="form-text">This will be your artist name on the platform.</div>
+    </div>
+    
+    <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" id="email" required>
+    </div>
+    
+    <div class="mb-3">
+        <label for="bio" class="form-label">Bio</label>
+        <textarea name="bio" class="form-control" id="bio" rows="3"></textarea>
+        <div class="form-text">Tell us about yourself and your work.</div>
+    </div>
+    
+    <div class="mb-3">
+        <label for="website" class="form-label">Website</label>
+        <input type="url" name="website" class="form-control" id="website">
+        <div class="form-text">Optional: Link to your portfolio or personal website.</div>
+    </div>
+    
+    <div class="mb-3">
+        <label for="avatar" class="form-label">Profile Picture</label>
+        <input type="file" name="avatar" class="form-control" id="avatar" accept="image/*">
+    </div>
+    
+    <div class="mb-3">
+        <label for="password1" class="form-label">Password</label>
+        <input type="password" name="password1" class="form-control" id="password1" required>
+        <div class="form-text">
+            Your password must be at least 8 characters long and contain letters and numbers.
+        </div>
+    </div>
+    
+    <div class="mb-3">
+        <label for="password2" class="form-label">Confirm Password</label>
+        <input type="password" name="password2" class="form-control" id="password2" required>
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label d-block">Content Types</label>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="content_types" value="comics" id="type_comics">
+            <label class="form-check-label" for="type_comics">Comics</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="content_types" value="magazines" id="type_magazines">
+            <label class="form-check-label" for="type_magazines">Magazines</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="content_types" value="podcasts" id="type_podcasts">
+            <label class="form-check-label" for="type_podcasts">Podcasts</label>
+        </div>
+    </div>
+    
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+        <label class="form-check-label" for="terms">
+            I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> and <a href="#" class="text-decoration-none">Content Guidelines</a>
+        </label>
+    </div>
+    
+    <div class="d-grid mb-4">
+        <button type="submit" class="btn btn-primary">Create Artist Account</button>
+    </div>
+    
+    <div class="text-center">
+        <p class="mb-0">
+            Already have an account? 
+            <a href="{% url 'users:login' %}" class="text-decoration-none">Sign in</a>
+        </p>
+        <p class="mt-2">
+            Just want to browse? 
+            <a href="{% url 'users:register' %}" class="text-decoration-none">Register as user</a>
+        </p>
+    </div>
+</form>
+{% endblock %} 

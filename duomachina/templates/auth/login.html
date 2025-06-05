@@ -1,0 +1,48 @@
+{% extends 'auth/auth_base.html' %}
+
+{% block auth_title %}Welcome Back{% endblock %}
+{% block auth_subtitle %}Sign in to your account{% endblock %}
+
+{% block auth_content %}
+<form method="post" action="{% url 'users:login' %}">
+    {% csrf_token %}
+    {% if form.errors %}
+    <div class="alert alert-danger">
+        <small>Your username or password is incorrect. Please try again.</small>
+    </div>
+    {% endif %}
+    
+    <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" name="username" class="form-control" id="username" required>
+    </div>
+    
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" id="password" required>
+    </div>
+    
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+        <label class="form-check-label" for="remember">Remember me</label>
+    </div>
+    
+    <div class="d-grid mb-4">
+        <button type="submit" class="btn btn-primary">Sign In</button>
+    </div>
+    
+    <div class="text-center">
+        <p class="mb-2">
+            <a href="{% url 'users:password_reset' %}" class="text-decoration-none">Forgot password?</a>
+        </p>
+        <p class="mb-0">
+            Don't have an account? 
+            <a href="{% url 'users:register' %}" class="text-decoration-none">Sign up</a>
+        </p>
+        <p class="mt-2">
+            Are you an artist? 
+            <a href="{% url 'users:artist_register' %}" class="text-decoration-none">Create artist account</a>
+        </p>
+    </div>
+</form>
+{% endblock %} 

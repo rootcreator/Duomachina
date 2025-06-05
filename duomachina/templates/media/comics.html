@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Comics{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">Comics</h1>
+        {% if user.is_artist %}
+        <a href="{% url 'media:create_comic' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Create Comic
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="publisher" class="form-label">Publisher</label>
+                    <select name="publisher" id="publisher" class="form-select">
+                        <option value="">All Publishers</option>
+                        {% for publisher in publishers %}
+                        <option value="{{ publisher }}" {% if publisher == selected_publisher %}selected{% endif %}>
+                            {{ publisher }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="artist" class="form-label">Artist</label>
+                    <input type="text" class="form-control" id="artist" name="artist" 
+                           value="{{ selected_artist }}" placeholder="Search by artist...">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">Apply Filters</button>
+                    <a href="{% url 'media:comics' %}" class="btn btn-outline-secondary">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Comics Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        {% for comic in comics %}
+        <div class="col">
+            <div class="card h-100 content-card border-0 shadow-sm">
+                {% if comic.cover_image %}
+                <img src="{{ comic.cover_image.url }}" class="card-img-top" alt="{{ comic.title }}"
+                     style="height: 300px; object-fit: cover;">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                     style="height: 300px;">
+                    <i class="bi bi-book text-muted display-4"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ comic.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Issue #{{ comic.issue_number }}</h6>
+                    <p class="card-text small text-muted mb-2">
+                        <i class="bi bi-person-circle me-1"></i>{{ comic.artist.username }}
+                    </p>
+                    <p class="card-text small text-muted mb-3">
+                        <i class="bi bi-building me-1"></i>{{ comic.comic_publisher }}
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">{{ comic.release_date|date:"M d, Y" }}</small>
+                        <a href="{% url 'media:comic_detail' comic.pk %}" class="btn btn-outline-primary btn-sm">
+                            Read Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No comics found matching your criteria.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

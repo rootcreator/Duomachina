@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Gallery - DuoMachina{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Comics Section -->
+    <section class="mb-5">
+        <h2 class="mb-4">Comics</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            {% for comic in comics %}
+            <div class="col">
+                <div class="card h-100 content-card">
+                    {% if comic.cover_image %}
+                    <img src="{{ comic.cover_image.url }}" class="card-img-top" alt="{{ comic.title }}">
+                    {% else %}
+                    <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="bi bi-book fs-1"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ comic.title }}</h5>
+                        <p class="card-text text-muted">By {{ comic.artist.username }}</p>
+                        <a href="#" class="btn btn-outline-primary btn-sm">Read More</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Magazines Section -->
+    <section class="mb-5">
+        <h2 class="mb-4">Magazines</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            {% for magazine in magazines %}
+            <div class="col">
+                <div class="card h-100 content-card">
+                    {% if magazine.cover_image %}
+                    <img src="{{ magazine.cover_image.url }}" class="card-img-top" alt="{{ magazine.title }}">
+                    {% else %}
+                    <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="bi bi-journal-richtext fs-1"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ magazine.title }}</h5>
+                        <p class="card-text text-muted">{{ magazine.category.name }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">By {{ magazine.author.username }}</small>
+                            <a href="#" class="btn btn-outline-primary btn-sm">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Podcasts Section -->
+    <section class="mb-5">
+        <h2 class="mb-4">Podcasts</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            {% for podcast in podcasts %}
+            <div class="col">
+                <div class="card h-100 content-card">
+                    {% if podcast.cover_image %}
+                    <img src="{{ podcast.cover_image.url }}" class="card-img-top" alt="{{ podcast.title }}">
+                    {% else %}
+                    <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="bi bi-mic fs-1"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ podcast.title }}</h5>
+                        <p class="card-text text-muted">{{ podcast.category.name }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">By {{ podcast.author.username }}</small>
+                            <a href="#" class="btn btn-outline-primary btn-sm">Listen</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Other Media Section -->
+    <section class="mb-5">
+        <h2 class="mb-4">Media</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            {% for item in media %}
+            <div class="col">
+                <div class="card h-100 content-card">
+                    {% if item.file %}
+                    <div class="card-img-top bg-dark text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                        {% if item.file_type == 'video' %}
+                        <i class="bi bi-film fs-1"></i>
+                        {% elif item.file_type == 'audio' %}
+                        <i class="bi bi-music-note-beamed fs-1"></i>
+                        {% else %}
+                        <i class="bi bi-file-earmark fs-1"></i>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.title }}</h5>
+                        <p class="card-text text-muted">{{ item.get_file_type_display }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">By {{ item.artist.username }}</small>
+                            <a href="#" class="btn btn-outline-primary btn-sm">View</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %} 

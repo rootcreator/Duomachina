@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ comic.title }} - Issue #{{ comic.issue_number }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb" class="mt-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'media:comics' %}">Comics</a></li>
+            <li class="breadcrumb-item active">{{ comic.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Comic Cover and Info -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                {% if comic.cover_image %}
+                <img src="{{ comic.cover_image.url }}" class="card-img-top" alt="{{ comic.title }}">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <i class="bi bi-book text-muted display-1"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h1 class="h3 card-title">{{ comic.title }}</h1>
+                    <h6 class="card-subtitle mb-3 text-muted">Issue #{{ comic.issue_number }}</h6>
+                    
+                    <div class="mb-3">
+                        <h6 class="mb-2">Details</h6>
+                        <p class="card-text mb-1">
+                            <i class="bi bi-person-circle me-2"></i>
+                            <strong>Artist:</strong> {{ comic.artist.username }}
+                        </p>
+                        <p class="card-text mb-1">
+                            <i class="bi bi-building me-2"></i>
+                            <strong>Publisher:</strong> {{ comic.comic_publisher }}
+                        </p>
+                        <p class="card-text mb-1">
+                            <i class="bi bi-calendar-event me-2"></i>
+                            <strong>Release Date:</strong> {{ comic.release_date|date:"F d, Y" }}
+                        </p>
+                    </div>
+
+                    {% if user.is_authenticated %}
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary">
+                            <i class="bi bi-book-fill me-2"></i>Read Now
+                        </button>
+                        <button class="btn btn-outline-primary">
+                            <i class="bi bi-bookmark-plus me-2"></i>Add to Library
+                        </button>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Please <a href="{% url 'users:login' %}">sign in</a> to read this comic.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Description and Comments -->
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Description</h5>
+                    <p class="card-text">{{ comic.description|linebreaks }}</p>
+                </div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Comments</h5>
+                    
+                    {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'media:add_comment' comic.pk %}" class="mb-4">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <textarea class="form-control" name="comment" rows="3" 
+                                      placeholder="Share your thoughts..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Post Comment</button>
+                    </form>
+                    {% endif %}
+
+                    <div class="comments-list">
+                        {% for comment in comments %}
+                        <div class="d-flex mb-4">
+                            <div class="flex-shrink-0">
+                                {% if comment.user.avatar %}
+                                <img src="{{ comment.user.avatar.url }}" class="rounded-circle" 
+                                     width="50" height="50" alt="{{ comment.user.username }}">
+                                {% else %}
+                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center"
+                                     style="width: 50px; height: 50px;">
+                                    <i class="bi bi-person-fill text-white"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h6 class="mb-0">{{ comment.user.username }}</h6>
+                                    <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+                                </div>
+                                <p class="mb-0">{{ comment.text }}</p>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">No comments yet. Be the first to share your thoughts!</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
