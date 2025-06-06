@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-o5*1r)9hcwu_!*ci*rkgggiau=gzb6pmo-03i39)aory!_q7=x
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['duomachina.onrender.com', 'https://duomachina.onrender.com']
 
 
 # Application definition
