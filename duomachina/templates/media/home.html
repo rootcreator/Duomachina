@@ -12,8 +12,11 @@
                 <h1 class="display-3 fw-bold mb-4 text-gradient">Welcome to DuoMachina</h1>
                 <p class="lead fs-4 mb-5 text-secondary">Discover amazing comics, magazines, and podcasts from talented creators.</p>
                 <div class="d-flex flex-wrap gap-3">
-                    <a href="{% url 'media:gallery' %}" class="btn btn-primary btn-lg shadow-sm">
-                        <i class="bi bi-grid-3x3-gap me-2"></i>Browse Content
+                    <a href="#comics" class="btn btn-primary btn-lg">
+                        <i class="bi bi-book me-2"></i>Start Exploring
+                    </a>
+                    <a href="{% url 'media:gallery' %}" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-collection me-2"></i>View All Media
                     </a>
                     {% if not user.is_authenticated %}
                     <a href="{% url 'users:artist_register' %}" class="btn btn-outline-primary btn-lg">

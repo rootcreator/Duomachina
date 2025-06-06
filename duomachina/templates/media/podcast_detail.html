@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ podcast.title }}{% endblock %}
+{% block title %}{{ media.title }}{% endblock %}
 
 {% block content %}
 <div class="container py-4">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'media:podcast' %}">Podcasts</a></li>
-            <li class="breadcrumb-item active">{{ podcast.title }}</li>
+            <li class="breadcrumb-item"><a href="{% url 'media:media' %}?type=podcast">Podcasts</a></li>
+            <li class="breadcrumb-item active">{{ media.title }}</li>
         </ol>
     </nav>
 
@@ -20,8 +20,8 @@
                 <div class="card-body">
                     <div class="row g-4">
                         <div class="col-md-4">
-                            {% if podcast.cover_image %}
-                            <img src="{{ podcast.cover_image.url }}" class="img-fluid rounded" alt="{{ podcast.title }}">
+                            {% if media.cover_image %}
+                            <img src="{{ media.cover_image.url }}" class="img-fluid rounded" alt="{{ media.title }}">
                             {% else %}
                             <div class="ratio ratio-1x1 bg-light rounded d-flex align-items-center justify-content-center">
                                 <i class="bi bi-mic display-1 text-muted"></i>
@@ -29,23 +29,23 @@
                             {% endif %}
                         </div>
                         <div class="col-md-8">
-                            <h1 class="h2 mb-3">{{ podcast.title }}</h1>
+                            <h1 class="h2 mb-3">{{ media.title }}</h1>
                             <div class="mb-4">
-                                {% if podcast.category %}
-                                <span class="badge bg-primary me-2">{{ podcast.category.name }}</span>
+                                {% if media.podcast_category %}
+                                <span class="badge bg-primary me-2">{{ media.podcast_category.name }}</span>
                                 {% endif %}
-                                <span class="badge bg-secondary">{{ podcast.release_date|date }}</span>
+                                <span class="badge bg-secondary">{{ media.podcast_release_date|date }}</span>
                             </div>
-                            <p class="lead mb-4">{{ podcast.description }}</p>
+                            <p class="lead mb-4">{{ media.description }}</p>
                             <div class="d-flex align-items-center mb-3">
                                 <div>
                                     <small class="text-muted d-block">Host</small>
-                                    <strong>{{ podcast.author.get_full_name|default:podcast.author.username }}</strong>
+                                    <strong>{{ media.artist.get_full_name|default:media.artist.username }}</strong>
                                 </div>
                             </div>
-                            {% if podcast.tags.exists %}
+                            {% if media.tags.exists %}
                             <div class="mb-4">
-                                {% for tag in podcast.tags.all %}
+                                {% for tag in media.tags.all %}
                                 <span class="badge bg-light text-dark me-1">#{{ tag.name }}</span>
                                 {% endfor %}
                             </div>
@@ -59,7 +59,7 @@
                         <div class="card bg-light">
                             <div class="card-body">
                                 <audio controls class="w-100">
-                                    <source src="{{ podcast.audio_file.url }}" type="audio/mpeg">
+                                    <source src="{{ media.file.url }}" type="audio/mpeg">
                                     Your browser does not support the audio element.
                                 </audio>
                             </div>
@@ -73,7 +73,7 @@
                 <div class="card-body">
                     <h4 class="card-title mb-4">Comments</h4>
                     {% if user.is_authenticated %}
-                    <form method="post" action="{% url 'media:add_podcast_comment' podcast.id %}" class="mb-4">
+                    <form method="post" action="{% url 'media:add_comment' media.id %}" class="mb-4">
                         {% csrf_token %}
                         <div class="mb-3">
                             <textarea class="form-control" name="text" rows="3" required></textarea>
@@ -118,8 +118,8 @@
                 <div class="card-body">
                     <h5 class="card-title">About the Host</h5>
                     <div class="d-flex align-items-center mb-3">
-                        {% if podcast.author.avatar %}
-                        <img src="{{ podcast.author.avatar.url }}" class="rounded-circle me-3" width="64" height="64">
+                        {% if media.artist.avatar %}
+                        <img src="{{ media.artist.avatar.url }}" class="rounded-circle me-3" width="64" height="64">
                         {% else %}
                         <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3"
                              style="width: 64px; height: 64px;">
@@ -127,14 +127,14 @@
                         </div>
                         {% endif %}
                         <div>
-                            <h6 class="mb-1">{{ podcast.author.get_full_name|default:podcast.author.username }}</h6>
+                            <h6 class="mb-1">{{ media.artist.get_full_name|default:media.artist.username }}</h6>
                             <p class="text-muted mb-0">
-                                <i class="bi bi-geo-alt-fill"></i> {{ podcast.author.location|default:"Location not specified" }}
+                                <i class="bi bi-geo-alt-fill"></i> {{ media.artist.location|default:"Location not specified" }}
                             </p>
                         </div>
                     </div>
-                    <p class="mb-3">{{ podcast.author.bio|default:"No bio available"|truncatewords:30 }}</p>
-                    <a href="{% url 'users:artist_profile' podcast.author.username %}" class="btn btn-outline-primary btn-sm">
+                    <p class="mb-3">{{ media.artist.bio|default:"No bio available"|truncatewords:30 }}</p>
+                    <a href="{% url 'users:artist_profile' media.artist.username %}" class="btn btn-outline-primary btn-sm">
                         View Profile
                     </a>
                 </div>
@@ -150,7 +150,7 @@
                                 <i class="bi bi-eye-fill text-primary me-2"></i>
                                 <div>
                                     <div class="small text-muted">Views</div>
-                                    <strong>{{ podcast.views }}</strong>
+                                    <strong>{{ media.views }}</strong>
                                 </div>
                             </div>
                         </div>
@@ -159,7 +159,7 @@
                                 <i class="bi bi-star-fill text-warning me-2"></i>
                                 <div>
                                     <div class="small text-muted">Rating</div>
-                                    <strong>{{ podcast.podcast_ratings.count }}</strong>
+                                    <strong>{{ media.media_ratings.count }}</strong>
                                 </div>
                             </div>
                         </div>
@@ -168,7 +168,7 @@
                                 <i class="bi bi-chat-fill text-info me-2"></i>
                                 <div>
                                     <div class="small text-muted">Comments</div>
-                                    <strong>{{ podcast.podcast_comments.count }}</strong>
+                                    <strong>{{ media.media_comments.count }}</strong>
                                 </div>
                             </div>
                         </div>
@@ -177,7 +177,7 @@
                                 <i class="bi bi-calendar-event text-success me-2"></i>
                                 <div>
                                     <div class="small text-muted">Published</div>
-                                    <strong>{{ podcast.created_at|date }}</strong>
+                                    <strong>{{ media.created_at|date }}</strong>
                                 </div>
                             </div>
                         </div>
@@ -190,7 +190,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Rate this Podcast</h5>
                     {% if user.is_authenticated %}
-                    <form method="post" action="{% url 'media:add_podcast_rating' podcast.id %}">
+                    <form method="post" action="{% url 'media:add_rating' media.id %}">
                         {% csrf_token %}
                         <div class="mb-3">
                             <select name="rating" class="form-select" required>

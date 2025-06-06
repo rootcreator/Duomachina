@@ -22,16 +22,6 @@ class MagazineCategory(models.Model):
     def __str__(self):
         return self.name
 
-class PodcastCategory(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    description = models.TextField(blank=True)
-    
-    class Meta:
-        verbose_name_plural = "Podcast Categories"
-    
-    def __str__(self):
-        return self.name
-
 class Tag(models.Model):
     name = models.CharField(max_length=255, unique=True)
     
@@ -71,6 +61,9 @@ class Media(BaseContent):
         ('video', 'Video'),
         ('book', 'Book'),
         ('manuscript', 'Manuscript'),
+        ('comic', 'Comic'),
+        ('podcast', 'Podcast'),
+        ('other', 'Other'),
     ]
 
     # Base fields
@@ -84,6 +77,12 @@ class Media(BaseContent):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # Comic specific fields
+    issue_number = models.PositiveIntegerField(null=True, blank=True, help_text="Issue number for comics")
+    comic_publisher = models.CharField(max_length=255, blank=True, help_text="Publisher of the comic")
+    comic_series = models.CharField(max_length=255, blank=True, help_text="Name of the comic series")
+    comic_release_date = models.DateField(null=True, blank=True, help_text="Release date for comics")
+
     # Image specific fields
     image_width = models.PositiveIntegerField(null=True, blank=True, help_text="Width of the image in pixels")
     image_height = models.PositiveIntegerField(null=True, blank=True, help_text="Height of the image in pixels")
@@ -93,13 +92,17 @@ class Media(BaseContent):
     focal_length = models.CharField(max_length=50, blank=True, help_text="Focal length used for the photo")
     is_panorama = models.BooleanField(default=False, help_text="Whether this is a panoramic image")
 
-    # Audio specific fields
+    # Audio and Podcast specific fields
     duration = models.DurationField(null=True, blank=True, help_text="Duration of the audio/video")
     audio_format = models.CharField(max_length=10, blank=True, help_text="Format of the audio file (e.g., MP3, WAV)")
     sample_rate = models.PositiveIntegerField(null=True, blank=True, help_text="Sample rate in Hz")
     bit_rate = models.PositiveIntegerField(null=True, blank=True, help_text="Bit rate in kbps")
     is_podcast_episode = models.BooleanField(default=False, help_text="Whether this is part of a podcast series")
     episode_number = models.PositiveIntegerField(null=True, blank=True, help_text="Episode number if part of a series")
+    podcast_series_name = models.CharField(max_length=255, blank=True, help_text="Name of the podcast series if part of one")
+    podcast_season_number = models.PositiveIntegerField(null=True, blank=True, help_text="Season number if part of a podcast series")
+    podcast_category = models.ForeignKey(Category, related_name='podcast_media', on_delete=models.SET_NULL, null=True, blank=True)
+    podcast_release_date = models.DateField(null=True, blank=True, help_text="Release date for podcast episodes")
 
     # Video specific fields
     video_format = models.CharField(max_length=10, blank=True, help_text="Format of the video file (e.g., MP4, AVI)")
@@ -168,6 +171,20 @@ class Media(BaseContent):
         elif self.media_type == 'image':
             if not self.image_format:
                 raise ValidationError({'image_format': 'Image format is required'})
+        elif self.media_type == 'comic':
+            if not self.issue_number:
+                raise ValidationError({'issue_number': 'Issue number is required for comics'})
+            if not self.comic_publisher:
+                raise ValidationError({'comic_publisher': 'Publisher is required for comics'})
+            if not self.comic_release_date:
+                raise ValidationError({'comic_release_date': 'Release date is required for comics'})
+        elif self.media_type == 'podcast':
+            if not self.duration:
+                raise ValidationError({'duration': 'Duration is required for podcasts'})
+            if not self.audio_format:
+                raise ValidationError({'audio_format': 'Audio format is required'})
+            if not self.podcast_release_date:
+                raise ValidationError({'podcast_release_date': 'Release date is required for podcasts'})
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -178,34 +195,6 @@ class Media(BaseContent):
 
     def get_edit_url(self):
         return reverse('media:media_edit', kwargs={'slug': self.slug})
-
-class Comic(models.Model):
-    artist = models.ForeignKey(User, related_name='comics', on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    issue_number = models.PositiveIntegerField()
-    comic_publisher = models.CharField(max_length=255)
-    cover_image = models.ImageField(upload_to='comic_covers/%Y/%m/%d/', null=True, blank=True)
-    release_date = models.DateField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    views = models.PositiveIntegerField(default=0)
-    status = models.CharField(
-        max_length=20,
-        choices=[
-            ('draft', 'Draft'),
-            ('published', 'Published'),
-            ('archived', 'Archived')
-        ],
-        default='draft'
-    )
-    
-    class Meta:
-        verbose_name_plural = 'Comics'
-        ordering = ['-release_date']
-
-    def __str__(self):
-        return f"{self.title} (Issue {self.issue_number})"
 
 class Magazine(BaseContent):
     title = models.CharField(max_length=255)
@@ -233,37 +222,11 @@ class Magazine(BaseContent):
     def __str__(self):
         return f"{self.title} - Issue {self.issue_number}"
 
-class Podcast(BaseContent):
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    tags = models.ManyToManyField(Tag, related_name='podcasts', blank=True)
-    audio_file = models.FileField(upload_to='podcasts/%Y/%m/%d/')
-    cover_image = models.ImageField(upload_to='podcast_covers/%Y/%m/%d/', null=True, blank=True)
-    release_date = models.DateField()
-    category = models.ForeignKey(PodcastCategory, related_name='podcasts', on_delete=models.SET_NULL, null=True)
-    author = models.ForeignKey(User, related_name='podcasts', on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def get_absolute_url(self):
-        return reverse('media:podcast_detail', kwargs={'slug': self.slug})
-
-    def get_edit_url(self):
-        return reverse('media:podcast_edit', kwargs={'slug': self.slug})
-
-    class Meta:
-        ordering = ['-release_date']
-
-    def __str__(self):
-        return self.title
-
 class Comment(models.Model):
     user = models.ForeignKey(User, related_name='user_comments', on_delete=models.CASCADE)
     media = models.ForeignKey(Media, related_name='media_comments', on_delete=models.CASCADE, null=True, blank=True)
     magazine = models.ForeignKey(Magazine, related_name='magazine_comments', on_delete=models.CASCADE, null=True, blank=True)
-    podcast = models.ForeignKey(Podcast, related_name='podcast_comments', on_delete=models.CASCADE, null=True, blank=True)
-    comic = models.ForeignKey(Comic, related_name='comic_comments', on_delete=models.CASCADE, null=True, blank=True)
-    text = models.TextField()
+    content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
@@ -278,7 +241,7 @@ class Rating(models.Model):
     RATING_CHOICES = [
         (1, '1 Star'),
         (2, '2 Stars'),
-        (3, '3 Stars'), 
+        (3, '3 Stars'),
         (4, '4 Stars'),
         (5, '5 Stars'),
     ]
@@ -290,8 +253,6 @@ class Rating(models.Model):
     # Change related_name to be specific to each content type
     media = models.ForeignKey(Media, related_name='media_ratings', on_delete=models.CASCADE, null=True, blank=True)
     magazine = models.ForeignKey(Magazine, related_name='magazine_ratings', on_delete=models.CASCADE, null=True, blank=True)
-    podcast = models.ForeignKey(Podcast, related_name='podcast_ratings', on_delete=models.CASCADE, null=True, blank=True)
-    comic = models.ForeignKey(Comic, related_name='comic_ratings', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f'{self.rating} stars by {self.user.username}'
@@ -299,8 +260,7 @@ class Rating(models.Model):
 class Subscription(models.Model):
     CONTENT_TYPE_CHOICES = [
         ('magazine', 'Magazine'),
-        ('podcast', 'Podcast'),
-        ('comic', 'Comic'),
+        ('media', 'Media'),
     ]
 
     user = models.ForeignKey(User, related_name='subscriptions', on_delete=models.CASCADE)
@@ -312,16 +272,17 @@ class Subscription(models.Model):
         unique_together = ('user', 'content_type', 'content_id')
 
     def __str__(self):
-        return f"{self.user.username}'s subscription to {self.content_type} #{self.content_id}"
+        return f'{self.user.username} - {self.content_type} #{self.content_id}'
 
 class Favorite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites')
     media = models.ForeignKey(Media, on_delete=models.CASCADE, related_name='media_favorites', null=True, blank=True)
     magazine = models.ForeignKey(Magazine, on_delete=models.CASCADE, related_name='magazine_favorites', null=True, blank=True)
-    podcast = models.ForeignKey(Podcast, on_delete=models.CASCADE, related_name='podcast_favorites', null=True, blank=True)
-    comic = models.ForeignKey(Comic, on_delete=models.CASCADE, related_name='comic_favorites', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        content = self.media or self.magazine or self.podcast or self.comic
-        return f"{self.user.username} favorited {content.title}"
+        if self.media:
+            return f'{self.user.username} favorited {self.media.title}'
+        elif self.magazine:
+            return f'{self.user.username} favorited {self.magazine.title}'
+        return f'{self.user.username} favorite'

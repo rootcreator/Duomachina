@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Gallery - DuoMachina{% endblock %}
-
 {% block content %}
 <!-- Hero Section -->
 <section class="gallery-hero position-relative mb-5">
@@ -16,7 +14,7 @@
                     <a href="#comics" class="btn btn-primary btn-lg">
                         <i class="bi bi-book me-2"></i>Start Exploring
                     </a>
-                    <a href="{% url 'media:media' %}" class="btn btn-outline-primary btn-lg">
+                    <a href="{% url 'media:gallery' %}" class="btn btn-outline-primary btn-lg">
                         <i class="bi bi-collection me-2"></i>View All Media
                     </a>
                 </div>
@@ -24,14 +22,14 @@
                     <div class="hero-stat">
                         <i class="bi bi-people-fill fs-4 me-2 text-primary"></i>
                         <div>
-                            <h4 class="h6 mb-0 text-primary">{{ total_creators }}+</h4>
+                            <h4 class="h6 mb-0 text-primary">{{ stats.total_creators }}+</h4>
                             <small class="text-secondary">Creators</small>
                         </div>
                     </div>
                     <div class="hero-stat">
                         <i class="bi bi-collection-fill fs-4 me-2 text-primary"></i>
                         <div>
-                            <h4 class="h6 mb-0 text-primary">{{ total_content }}+</h4>
+                            <h4 class="h6 mb-0 text-primary">{{ stats.total_content }}+</h4>
                             <small class="text-secondary">Content Pieces</small>
                         </div>
                     </div>
@@ -47,7 +45,7 @@
                         <div class="d-flex align-items-center">
                             <i class="bi bi-eye-fill text-primary fs-4 me-2"></i>
                             <div>
-                                <h4 class="h6 mb-0 text-primary">{{ total_views }}+</h4>
+                                <h4 class="h6 mb-0 text-primary">{{ stats.total_views }}+</h4>
                                 <small class="text-secondary">Total Views</small>
                             </div>
                         </div>
@@ -58,7 +56,7 @@
                         <div class="d-flex align-items-center">
                             <i class="bi bi-star-fill text-primary fs-4 me-2"></i>
                             <div>
-                                <h4 class="h6 mb-0 text-primary">{{ avg_rating|floatformat:1 }}</h4>
+                                <h4 class="h6 mb-0 text-primary">{{ stats.avg_rating|floatformat:1 }}</h4>
                                 <small class="text-secondary">Avg Rating</small>
                             </div>
                         </div>
@@ -69,41 +67,6 @@
     </div>
 </section>
 
-<!-- Navigation Tabs -->
-<div class="container mb-5">
-    <div class="nav-tabs-wrapper bg-white rounded-4 shadow-sm p-3">
-        <ul class="nav nav-tabs nav-fill border-0" role="tablist">
-            <li class="nav-item" role="presentation">
-                <a href="#comics" class="nav-link active px-4" data-bs-toggle="tab" role="tab">
-                    <i class="bi bi-book fs-5 me-2"></i>
-                    <span class="d-none d-sm-inline">Comics</span>
-                    <span class="badge bg-primary ms-2">{{ comics.count }}</span>
-                </a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a href="#magazines" class="nav-link px-4" data-bs-toggle="tab" role="tab">
-                    <i class="bi bi-journal-richtext fs-5 me-2"></i>
-                    <span class="d-none d-sm-inline">Magazines</span>
-                    <span class="badge bg-primary ms-2">{{ magazines.count }}</span>
-                </a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a href="#podcasts" class="nav-link px-4" data-bs-toggle="tab" role="tab">
-                    <i class="bi bi-mic fs-5 me-2"></i>
-                    <span class="d-none d-sm-inline">Podcasts</span>
-                    <span class="badge bg-primary ms-2">{{ podcasts.count }}</span>
-                </a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a href="#media" class="nav-link px-4" data-bs-toggle="tab" role="tab">
-                    <i class="bi bi-collection fs-5 me-2"></i>
-                    <span class="d-none d-sm-inline">Media</span>
-                    <span class="badge bg-primary ms-2">{{ media.count }}</span>
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
 
 <!-- Quick Stats -->
 <div class="container mb-5">
@@ -115,7 +78,7 @@
                         <i class="bi bi-book fs-4"></i>
                     </div>
                     <div>
-                        <h3 class="h5 mb-1">{{ comics.count }}</h3>
+                        <h3 class="h5 mb-1">{{ counts.comics }}</h3>
                         <p class="text-muted mb-0">Comics</p>
                     </div>
                 </div>
@@ -128,7 +91,7 @@
                         <i class="bi bi-journal-richtext fs-4"></i>
                     </div>
                     <div>
-                        <h3 class="h5 mb-1">{{ magazines.count }}</h3>
+                        <h3 class="h5 mb-1">{{ counts.magazines }}</h3>
                         <p class="text-muted mb-0">Magazines</p>
                     </div>
                 </div>
@@ -141,7 +104,7 @@
                         <i class="bi bi-mic fs-4"></i>
                     </div>
                     <div>
-                        <h3 class="h5 mb-1">{{ podcasts.count }}</h3>
+                        <h3 class="h5 mb-1">{{ counts.podcasts }}</h3>
                         <p class="text-muted mb-0">Podcasts</p>
                     </div>
                 </div>
@@ -154,7 +117,7 @@
                         <i class="bi bi-collection fs-4"></i>
                     </div>
                     <div>
-                        <h3 class="h5 mb-1">{{ media.count }}</h3>
+                        <h3 class="h5 mb-1">{{ counts.media }}</h3>
                         <p class="text-muted mb-0">Media</p>
                     </div>
                 </div>
@@ -163,238 +126,189 @@
     </div>
 </div>
 
-<div class="container">
-    <!-- Comics Section -->
-    <section id="comics" class="content-section mb-6">
-        <div class="section-header position-relative mb-4">
-            <div class="d-flex align-items-center justify-content-between">
-                <h2 class="mb-0 d-flex align-items-center">
-                    <i class="bi bi-book me-3 text-primary"></i>Comics
-                </h2>
-                <a href="{% url 'media:comics' %}" class="btn btn-outline-primary">
-                    <i class="bi bi-grid-3x3-gap me-2"></i>View All Comics
-                </a>
-            </div>
-            <div class="section-line mt-3"></div>
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <h1 class="h2 mb-0">Media Gallery</h1>
         </div>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-            {% for comic in comics %}
-            <div class="col">
-                <div class="card h-100 content-card border-0 shadow-sm hover-card">
-                    <div class="card-img-wrapper position-relative">
-                    {% if comic.cover_image %}
-                    <img src="{{ comic.cover_image.url }}" class="card-img-top" alt="{{ comic.title }}">
-                    {% else %}
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center ratio ratio-4x3">
-                            <i class="bi bi-book text-muted display-4"></i>
-                        </div>
-                        {% endif %}
-                        {% if comic.issue_number %}
-                        <div class="position-absolute top-0 end-0 m-2">
-                            <span class="badge bg-primary">Issue #{{ comic.issue_number }}</span>
-                        </div>
-                        {% endif %}
-                        <div class="card-img-overlay d-flex align-items-end">
-                            <div class="w-100 text-white p-3 overlay-content">
-                                <h5 class="card-title mb-1">{{ comic.title }}</h5>
-                                <p class="card-text small mb-0">By {{ comic.artist.username }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text text-muted small mb-3">{{ comic.description|truncatewords:15 }}</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-eye me-2 text-muted"></i>
-                                <small class="text-muted">{{ comic.views }}</small>
-                            </div>
-                            <a href="{% url 'media:comic_detail' comic.pk %}" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-book-half me-1"></i>Read
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
+        {% if user.is_artist %}
+        <div class="col-auto">
+            <a href="{% url 'media:create_media' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-2"></i>Upload Media
+            </a>
         </div>
-    </section>
+        {% endif %}
+    </div>
 
-    <!-- Magazines Section -->
-    <section id="magazines" class="content-section mb-6">
-        <div class="section-header position-relative mb-4">
-            <div class="d-flex align-items-center justify-content-between">
-                <h2 class="mb-0 d-flex align-items-center">
-                    <i class="bi bi-journal-richtext me-3 text-primary"></i>Magazines
-                </h2>
-                <a href="{% url 'media:magazine' %}" class="btn btn-outline-primary">
-                    <i class="bi bi-grid-3x3-gap me-2"></i>View All Magazines
-                </a>
-            </div>
-            <div class="section-line mt-3"></div>
-        </div>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-            {% for magazine in magazines %}
-            <div class="col">
-                <div class="card h-100 content-card border-0 shadow-sm hover-card">
-                    <div class="card-img-wrapper position-relative">
-                    {% if magazine.cover_image %}
-                    <img src="{{ magazine.cover_image.url }}" class="card-img-top" alt="{{ magazine.title }}">
-                    {% else %}
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center ratio ratio-4x3">
-                            <i class="bi bi-journal-richtext text-muted display-4"></i>
-                        </div>
-                        {% endif %}
-                        {% if magazine.issue_number %}
-                        <div class="position-absolute top-0 end-0 m-2">
-                            <span class="badge bg-primary">Issue #{{ magazine.issue_number }}</span>
-                        </div>
-                        {% endif %}
-                        <div class="card-img-overlay d-flex align-items-end">
-                            <div class="w-100 text-white p-3 overlay-content">
-                                <h5 class="card-title mb-1">{{ magazine.title }}</h5>
-                                <p class="card-text small mb-0">By {{ magazine.author.username }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text text-muted small mb-2">{{ magazine.category.name }}</p>
-                        <p class="card-text text-muted small mb-3">{{ magazine.description|truncatewords:15 }}</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-eye me-2 text-muted"></i>
-                                <small class="text-muted">{{ magazine.views }}</small>
-                            </div>
-                            <a href="{% url 'media:magazine_detail' magazine.pk %}" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-journal-text me-1"></i>Read
-                            </a>
-                        </div>
-                    </div>
+    <!-- Filters Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <!-- Media Type Filter -->
+                <div class="col-md-3">
+                    <label for="type" class="form-label">Media Type</label>
+                    <select name="type" id="type" class="form-select">
+                        <option value="">All Types</option>
+                        {% for type in media_types %}
+                        <option value="{{ type.value }}" {% if type.value == selected_type %}selected{% endif %}>
+                            {{ type.label }}
+                        </option>
+                        {% endfor %}
+                    </select>
                 </div>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
 
-    <!-- Podcasts Section -->
-    <section id="podcasts" class="content-section mb-6">
-        <div class="section-header position-relative mb-4">
-            <div class="d-flex align-items-center justify-content-between">
-                <h2 class="mb-0 d-flex align-items-center">
-                    <i class="bi bi-mic me-3 text-primary"></i>Podcasts
-                </h2>
-                <a href="{% url 'media:podcast' %}" class="btn btn-outline-primary">
-                    <i class="bi bi-grid-3x3-gap me-2"></i>View All Podcasts
-                </a>
-            </div>
-            <div class="section-line mt-3"></div>
-        </div>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-            {% for podcast in podcasts %}
-            <div class="col">
-                <div class="card h-100 content-card border-0 shadow-sm hover-card">
-                    <div class="card-img-wrapper position-relative">
-                    {% if podcast.cover_image %}
-                    <img src="{{ podcast.cover_image.url }}" class="card-img-top" alt="{{ podcast.title }}">
-                    {% else %}
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center ratio ratio-4x3">
-                            <i class="bi bi-mic text-muted display-4"></i>
-                        </div>
-                        {% endif %}
-                        {% if podcast.category %}
-                        <div class="position-absolute top-0 end-0 m-2">
-                            <span class="badge bg-primary">{{ podcast.category.name }}</span>
-                        </div>
-                        {% endif %}
-                        <div class="card-img-overlay d-flex align-items-end">
-                            <div class="w-100 text-white p-3 overlay-content">
-                                <h5 class="card-title mb-1">{{ podcast.title }}</h5>
-                                <p class="card-text small mb-0">By {{ podcast.author.username }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text text-muted small mb-3">{{ podcast.description|truncatewords:15 }}</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-eye me-2 text-muted"></i>
-                                <small class="text-muted">{{ podcast.views }}</small>
-                            </div>
-                            <a href="{% url 'media:podcast_detail' podcast.pk %}" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-play-circle me-1"></i>Listen
-                            </a>
-                        </div>
-                    </div>
+                <!-- Artist Filter -->
+                <div class="col-md-3">
+                    <label for="artist" class="form-label">Artist</label>
+                    <select name="artist" id="artist" class="form-select">
+                        <option value="">All Artists</option>
+                        {% for artist_name in artists %}
+                        <option value="{{ artist_name }}" {% if artist_name == selected_artist %}selected{% endif %}>
+                            {{ artist_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
                 </div>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
 
-    <!-- Media Section -->
-    <section id="media" class="content-section mb-6">
-        <div class="section-header position-relative mb-4">
-            <div class="d-flex align-items-center justify-content-between">
-                <h2 class="mb-0 d-flex align-items-center">
-                    <i class="bi bi-collection me-3 text-primary"></i>Media
-                </h2>
-                <a href="{% url 'media:media' %}" class="btn btn-outline-primary">
-                    <i class="bi bi-grid-3x3-gap me-2"></i>View All Media
-                </a>
-            </div>
-            <div class="section-line mt-3"></div>
+                <!-- Sort By -->
+                <div class="col-md-3">
+                    <label for="sort" class="form-label">Sort By</label>
+                    <select name="sort" id="sort" class="form-select">
+                        {% for option in sort_options %}
+                        <option value="{{ option.value }}" {% if option.value == selected_sort %}selected{% endif %}>
+                            {{ option.label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Apply Filters Button -->
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-funnel me-2"></i>Apply Filters
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-            {% for item in media %}
-            <div class="col">
-                <div class="card h-100 content-card border-0 shadow-sm hover-card">
-                    <div class="card-img-wrapper position-relative">
-                        {% if item.cover_image %}
-                        <img src="{{ item.cover_image.url }}" class="card-img-top" alt="{{ item.title }}">
+    </div>
+
+    <!-- Media Grid -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        {% for item in media_list %}
+        <div class="col">
+            <div class="card h-100 hover-card">
+                <div class="card-img-wrapper position-relative">
+                    {% if item.cover_image %}
+                    <img src="{{ item.cover_image.url }}" class="card-img-top" alt="{{ item.title }}">
+                    {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center ratio ratio-4x3">
+                        {% if item.media_type == 'video' %}
+                        <i class="bi bi-film text-muted display-4"></i>
+                        {% elif item.media_type == 'audio' %}
+                        <i class="bi bi-music-note-beamed text-muted display-4"></i>
+                        {% elif item.media_type == 'book' %}
+                        <i class="bi bi-book text-muted display-4"></i>
+                        {% elif item.media_type == 'manuscript' %}
+                        <i class="bi bi-file-text text-muted display-4"></i>
                         {% else %}
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center ratio ratio-4x3">
-                            {% if item.media_type == 'video' %}
-                            <i class="bi bi-film text-muted display-4"></i>
-                            {% elif item.media_type == 'audio' %}
-                            <i class="bi bi-music-note-beamed text-muted display-4"></i>
-                            {% elif item.media_type == 'book' %}
-                            <i class="bi bi-book text-muted display-4"></i>
-                            {% elif item.media_type == 'manuscript' %}
-                            <i class="bi bi-file-text text-muted display-4"></i>
-                            {% else %}
-                            <i class="bi bi-image text-muted display-4"></i>
-                            {% endif %}
-                        </div>
+                        <i class="bi bi-image text-muted display-4"></i>
                         {% endif %}
-                        <div class="position-absolute top-0 end-0 m-2">
-                            <span class="badge bg-primary">{{ item.media_type|title }}</span>
-                        </div>
-                        <div class="card-img-overlay d-flex align-items-end">
-                            <div class="w-100 text-white p-3 overlay-content">
-                                <h5 class="card-title mb-1">{{ item.title }}</h5>
-                                <p class="card-text small mb-0">By {{ item.artist.username }}</p>
-                            </div>
-                        </div>
                     </div>
-                    <div class="card-body">
-                        <p class="card-text text-muted small mb-3">{{ item.description|truncatewords:15 }}</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-eye me-2 text-muted"></i>
-                                <small class="text-muted">{{ item.views }}</small>
+                    {% endif %}
+                    <div class="card-img-overlay d-flex align-items-end">
+                        <div class="w-100 text-white p-3 overlay-content">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-primary">
+                                    {% for type in media_types %}
+                                        {% if type.value == item.media_type %}
+                                            {{ type.label }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <span class="small">
+                                    <i class="bi bi-eye me-1"></i>{{ item.views }}
+                                </span>
                             </div>
-                            <a href="{% url 'media:media_detail' item.pk %}" class="btn btn-outline-primary btn-sm">
-                                {% if item.media_type == 'video' %}<i class="bi bi-play-circle me-1"></i>Watch
-                                {% elif item.media_type == 'audio' %}<i class="bi bi-music-note me-1"></i>Listen
-                                {% elif item.media_type == 'book' or item.media_type == 'manuscript' %}<i class="bi bi-book-half me-1"></i>Read
-                                {% else %}<i class="bi bi-eye me-1"></i>View{% endif %}
-                            </a>
                         </div>
                     </div>
                 </div>
+                <div class="card-body">
+                    <h5 class="card-title text-truncate mb-1">{{ item.title }}</h5>
+                    <p class="card-text small text-muted mb-2">by {{ item.artist.username }}</p>
+                    <p class="card-text small text-muted mb-3">{{ item.description|truncatewords:15 }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="rating small">
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <span class="ms-1">{{ item.average_rating|default:"N/A" }}</span>
+                        </div>
+                        <a href="{{ item.get_absolute_url }}" class="btn btn-sm btn-outline-primary">
+                            {% if item.media_type == 'video' %}
+                            <i class="bi bi-play-circle me-1"></i>Watch
+                            {% elif item.media_type == 'audio' %}
+                            <i class="bi bi-music-note me-1"></i>Listen
+                            {% elif item.media_type == 'book' or item.media_type == 'manuscript' %}
+                            <i class="bi bi-book-half me-1"></i>Read
+                            {% else %}
+                            <i class="bi bi-eye me-1"></i>View
+                            {% endif %}
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span><i class="bi bi-calendar me-1"></i>{{ item.created_at|date:"M d, Y" }}</span>
+                        <span><i class="bi bi-chat me-1"></i>{{ item.comment_count }}</span>
+                    </div>
+                </div>
             </div>
-            {% endfor %}
         </div>
-    </section>
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="bi bi-inbox display-1 text-muted mb-4"></i>
+                <h3>No Media Found</h3>
+                <p class="text-muted">Try adjusting your filters or upload some media.</p>
+                {% if user.is_artist %}
+                <a href="{% url 'media:create_media' %}" class="btn btn-primary mt-3">
+                    <i class="bi bi-plus-lg me-2"></i>Upload Media
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if media_list.has_other_pages %}
+    <nav class="mt-4" aria-label="Media pagination">
+        <ul class="pagination justify-content-center">
+            {% if media_list.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ media_list.previous_page_number }}&type={{ selected_type }}&artist={{ selected_artist }}&sort={{ selected_sort }}">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in media_list.paginator.page_range %}
+            <li class="page-item {% if media_list.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}&type={{ selected_type }}&artist={{ selected_artist }}&sort={{ selected_sort }}">
+                    {{ num }}
+                </a>
+            </li>
+            {% endfor %}
+
+            {% if media_list.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ media_list.next_page_number }}&type={{ selected_type }}&artist={{ selected_artist }}&sort={{ selected_sort }}">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
 </div>
 
 {% block extra_css %}
@@ -568,6 +482,13 @@
                 }
             })
         })
+
+        // Auto-submit form when select fields change
+        document.querySelectorAll('select[name="type"], select[name="artist"], select[name="sort"]').forEach(select => {
+            select.addEventListener('change', () => {
+                select.closest('form').submit();
+            });
+        });
     })
 </script>
 {% endblock %}

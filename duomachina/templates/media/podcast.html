@@ -12,12 +12,12 @@
                     <h5 class="mb-0">Categories</h5>
                 </div>
                 <div class="list-group list-group-flush">
-                    <a href="{% url 'media:podcast' %}" 
+                    <a href="{% url 'media:media' %}?type=podcast" 
                        class="list-group-item list-group-item-action {% if not selected_category %}active{% endif %}">
                         All Categories
                     </a>
                     {% for category in categories %}
-                    <a href="{% url 'media:podcast' %}?category={{ category.name }}" 
+                    <a href="{% url 'media:media' %}?type=podcast&category={{ category.name }}" 
                        class="list-group-item list-group-item-action {% if selected_category == category.name %}active{% endif %}">
                         {{ category.name }}
                     </a>
@@ -31,13 +31,13 @@
             <h2 class="mb-4">{% if selected_category %}{{ selected_category }} Podcasts{% else %}All Podcasts{% endif %}</h2>
             
             <div class="row row-cols-1 g-4">
-                {% for podcast in podcasts %}
+                {% for media in media_list %}
                 <div class="col">
                     <div class="card content-card">
                         <div class="row g-0">
                             <div class="col-md-4">
-                                {% if podcast.cover_image %}
-                                <img src="{{ podcast.cover_image.url }}" class="img-fluid rounded-start h-100 object-fit-cover" alt="{{ podcast.title }}">
+                                {% if media.cover_image %}
+                                <img src="{{ media.cover_image.url }}" class="img-fluid rounded-start h-100 object-fit-cover" alt="{{ media.title }}">
                                 {% else %}
                                 <div class="bg-secondary text-white d-flex align-items-center justify-content-center h-100" style="min-height: 200px;">
                                     <i class="bi bi-mic fs-1"></i>
@@ -46,35 +46,35 @@
                             </div>
                             <div class="col-md-8">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{ podcast.title }}</h5>
-                                    <p class="card-text">{{ podcast.description|truncatewords:30 }}</p>
+                                    <h5 class="card-title">{{ media.title }}</h5>
+                                    <p class="card-text">{{ media.description|truncatewords:30 }}</p>
                                     
-                                    {% if podcast.audio_file %}
+                                    {% if media.file %}
                                     <div class="mb-3">
                                         <audio controls class="w-100">
-                                            <source src="{{ podcast.audio_file.url }}" type="audio/mpeg">
+                                            <source src="{{ media.file.url }}" type="audio/mpeg">
                                             Your browser does not support the audio element.
                                         </audio>
                                     </div>
                                     {% endif %}
                                     
                                     <div class="mb-2">
-                                        {% for tag in podcast.tags.all %}
+                                        {% for tag in media.tags.all %}
                                         <span class="badge bg-secondary me-1">{{ tag.name }}</span>
                                         {% endfor %}
                                     </div>
                                     
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="text-muted">
-                                            <small>By {{ podcast.author.username }}</small>
+                                            <small>By {{ media.artist.username }}</small>
                                             <br>
-                                            <small>Published {{ podcast.created_at|date:"M d, Y" }}</small>
+                                            <small>Published {{ media.created_at|date:"M d, Y" }}</small>
                                         </div>
                                         <div>
-                                            <a href="{% url 'media:api-podcast-detail' podcast.pk %}" class="btn btn-outline-primary btn-sm">
+                                            <a href="{% url 'media:media_detail' media.slug %}" class="btn btn-outline-primary btn-sm">
                                                 <i class="bi bi-download"></i> Download
                                             </a>
-                                            <a href="{% url 'media:api-podcast-detail' podcast.pk %}" class="btn btn-primary btn-sm">
+                                            <a href="{% url 'media:media_detail' media.slug %}" class="btn btn-primary btn-sm">
                                                 <i class="bi bi-collection-play"></i> Episodes
                                             </a>
                                         </div>

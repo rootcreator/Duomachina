@@ -4,349 +4,224 @@
 {% block title %}{{ media.title }}{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="container mt-4">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'media:home' %}">Home</a></li>
             <li class="breadcrumb-item"><a href="{% url 'media:gallery' %}">Gallery</a></li>
             <li class="breadcrumb-item active">{{ media.title }}</li>
         </ol>
     </nav>
 
-    <div class="row g-4">
-        <!-- Media Content Column -->
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm">
+    <div class="row">
+        <!-- Media Cover/Preview -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                {% if media.cover_image %}
+                <img src="{{ media.cover_image.url }}" class="card-img-top" alt="{{ media.title }}">
+                {% else %}
+                <div class="card-img-top bg-light text-center py-5">
+                    <i class="bi bi-file-earmark-text display-4"></i>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Media Info Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Media Information</h5>
+                </div>
                 <div class="card-body">
-                    <h1 class="h2 mb-3">{{ media.title }}</h1>
-                    
-                    <!-- Dynamic Media Content -->
-                    {% if media.media_type == 'image' %}
-                        <div class="text-center mb-4">
-                            <img src="{{ media.file.url }}" class="img-fluid rounded" alt="{{ media.title }}">
-                            {% if media.is_panorama %}
-                                <span class="badge bg-info mt-2">Panorama</span>
-                            {% endif %}
-                        </div>
-                        <div class="row g-3 mb-4">
-                            <div class="col-sm-6 col-md-4">
-                                <div class="small text-muted">Dimensions</div>
-                                <div>{{ media.image_width }}x{{ media.image_height }}</div>
-                            </div>
-                            {% if media.camera_model %}
-                            <div class="col-sm-6 col-md-4">
-                                <div class="small text-muted">Camera</div>
-                                <div>{{ media.camera_model }}</div>
-                            </div>
-                            {% endif %}
-                            {% if media.focal_length %}
-                            <div class="col-sm-6 col-md-4">
-                                <div class="small text-muted">Focal Length</div>
-                                <div>{{ media.focal_length }}</div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    
-                    {% elif media.media_type == 'audio' %}
-                        <div class="mb-4">
-                            <audio controls class="w-100">
-                                <source src="{{ media.file.url }}" type="audio/{{ media.audio_format|lower }}">
-                                Your browser does not support the audio element.
-                            </audio>
-                        </div>
-                        <div class="row g-3 mb-4">
-                            <div class="col-sm-6 col-md-4">
-                                <div class="small text-muted">Duration</div>
-                                <div>{{ media.duration }}</div>
-                            </div>
-                            <div class="col-sm-6 col-md-4">
-                                <div class="small text-muted">Format</div>
-                                <div>{{ media.audio_format }}</div>
-                            </div>
-                            {% if media.is_podcast_episode %}
-                            <div class="col-sm-6 col-md-4">
-                                <div class="small text-muted">Episode</div>
-                                <div>#{{ media.episode_number }}</div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    
-                    {% elif media.media_type == 'video' %}
-                        <div class="mb-4">
-                            <video controls class="w-100">
-                                <source src="{{ media.file.url }}" type="video/{{ media.video_format|lower }}">
-                                {% if media.has_subtitles %}
-                                    <track kind="subtitles" src="{{ media.subtitle_file.url }}" label="Subtitles">
-                                {% endif %}
-                                Your browser does not support the video element.
-                            </video>
-                        </div>
-                        <div class="row g-3 mb-4">
-                            <div class="col-sm-6 col-md-4">
-                                <div class="small text-muted">Duration</div>
-                                <div>{{ media.duration }}</div>
-                            </div>
-                            <div class="col-sm-6 col-md-4">
-                                <div class="small text-muted">Quality</div>
-                                <div>{{ media.video_width }}x{{ media.video_height }}</div>
-                            </div>
-                            {% if media.is_series_episode %}
-                            <div class="col-sm-6 col-md-4">
-                                <div class="small text-muted">Series</div>
-                                <div>{{ media.video_series_name }} S{{ media.video_season_number }}E{{ media.video_episode_number }}</div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    
-                    {% elif media.media_type == 'book' %}
-                        <div class="row g-4 mb-4">
-                            <div class="col-md-4">
-                                {% if media.cover_image %}
-                                    <img src="{{ media.cover_image.url }}" class="img-fluid rounded" alt="{{ media.title }}">
-                                {% else %}
-                                    <div class="ratio ratio-3x4 bg-light rounded d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-book display-1 text-muted"></i>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-8">
-                                <div class="row g-3">
-                                    <div class="col-sm-6">
-                                        <div class="small text-muted">Author</div>
-                                        <div>{{ media.author_name }}</div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="small text-muted">Publisher</div>
-                                        <div>{{ media.book_publisher }}</div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="small text-muted">Publication Date</div>
-                                        <div>{{ media.publication_date }}</div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="small text-muted">ISBN</div>
-                                        <div>{{ media.isbn }}</div>
-                                    </div>
-                                    {% if media.is_book_series %}
-                                    <div class="col-12">
-                                        <div class="small text-muted">Series</div>
-                                        <div>{{ media.book_series_name }} #{{ media.book_series_number }}</div>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <a href="{{ media.file.url }}" class="btn btn-primary" download>
-                                <i class="bi bi-download me-2"></i>Download Book
-                            </a>
-                        </div>
-                    
-                    {% elif media.media_type == 'manuscript' %}
-                        <div class="row g-4 mb-4">
-                            <div class="col-md-4">
-                                {% if media.cover_image %}
-                                    <img src="{{ media.cover_image.url }}" class="img-fluid rounded" alt="{{ media.title }}">
-                                {% else %}
-                                    <div class="ratio ratio-3x4 bg-light rounded d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-file-text display-1 text-muted"></i>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-8">
-                                <div class="row g-3">
-                                    <div class="col-sm-6">
-                                        <div class="small text-muted">Author</div>
-                                        <div>{{ media.author_name }}</div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="small text-muted">Date</div>
-                                        <div>{{ media.manuscript_date }}</div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="small text-muted">Location</div>
-                                        <div>{{ media.manuscript_location }}</div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="small text-muted">Material</div>
-                                        <div>{{ media.material }}</div>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="small text-muted">Condition</div>
-                                        <div>{{ media.manuscript_condition }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <h5>Restoration History</h5>
-                            <p>{{ media.restoration_history|linebreaks }}</p>
-                        </div>
-                    {% endif %}
-
-                    <!-- Description -->
-                    <h5>Description</h5>
-                    <p>{{ media.description|linebreaks }}</p>
-
-                    <!-- Categories and Tags -->
-                    <div class="mb-4">
-                        {% if media.categories.exists %}
-                        <div class="mb-2">
-                            {% for category in media.categories.all %}
-                            <span class="badge bg-primary me-1">{{ category.name }}</span>
-                            {% endfor %}
-                        </div>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <strong>Artist:</strong> {{ media.artist.username }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>Type:</strong> {{ media.media_type|title }}
+                        </li>
+                        {% if media.media_type == 'comic' %}
+                        <li class="mb-2">
+                            <strong>Issue Number:</strong> #{{ media.issue_number }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>Publisher:</strong> {{ media.comic_publisher }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>Series:</strong> {{ media.comic_series }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>Release Date:</strong> {{ media.comic_release_date|date:"F d, Y" }}
+                        </li>
                         {% endif %}
-                        {% if media.tags.exists %}
-                        <div>
-                            {% for tag in media.tags.all %}
-                            <span class="badge bg-secondary me-1">{{ tag.name }}</span>
-                            {% endfor %}
-                        </div>
+                        {% if media.media_type == 'image' %}
+                        <li class="mb-2">
+                            <strong>Dimensions:</strong> {{ media.image_width }}x{{ media.image_height }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>Format:</strong> {{ media.image_format }}
+                        </li>
+                        {% if media.camera_model %}
+                        <li class="mb-2">
+                            <strong>Camera:</strong> {{ media.camera_model }}
+                        </li>
                         {% endif %}
-                    </div>
+                        {% endif %}
+                        {% if media.media_type == 'video' %}
+                        <li class="mb-2">
+                            <strong>Format:</strong> {{ media.video_format }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>Resolution:</strong> {{ media.video_width }}x{{ media.video_height }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>Frame Rate:</strong> {{ media.frame_rate }} fps
+                        </li>
+                        {% endif %}
+                        {% if media.media_type == 'audio' %}
+                        <li class="mb-2">
+                            <strong>Duration:</strong> {{ media.duration }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>Format:</strong> {{ media.audio_format }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>Sample Rate:</strong> {{ media.sample_rate }} Hz
+                        </li>
+                        {% endif %}
+                        <li class="mb-2">
+                            <strong>Views:</strong> {{ media.views }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>Added:</strong> {{ media.created_at|date:"F d, Y" }}
+                        </li>
+                    </ul>
                 </div>
             </div>
 
-            <!-- Comments Section -->
-            <div class="card border-0 shadow-sm mt-4">
+            <!-- Categories and Tags -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Categories & Tags</h5>
+                </div>
                 <div class="card-body">
-                    <h4 class="card-title mb-4">Comments</h4>
-                    {% if user.is_authenticated %}
-                    <form method="post" action="{% url 'media:add_comment' media.id %}" class="mb-4">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <textarea class="form-control" name="text" rows="3" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Post Comment</button>
-                    </form>
-                    {% else %}
-                    <p class="text-muted">Please <a href="{% url 'users:login' %}">login</a> to post comments.</p>
+                    {% if media.categories.all %}
+                    <h6>Categories:</h6>
+                    <div class="mb-3">
+                        {% for category in media.categories.all %}
+                        <span class="badge bg-primary me-1">{{ category.name }}</span>
+                        {% endfor %}
+                    </div>
                     {% endif %}
 
-                    {% for comment in comments %}
-                    <div class="mb-3">
-                        <div class="d-flex">
-                            {% if comment.user.avatar %}
-                            <img src="{{ comment.user.avatar.url }}" class="rounded-circle me-2" width="40" height="40">
-                            {% else %}
-                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2"
-                                 style="width: 40px; height: 40px;">
-                                <i class="bi bi-person-fill text-white"></i>
-                            </div>
-                            {% endif %}
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-0">{{ comment.user.username }}</h6>
-                                    <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
-                                </div>
-                                <p class="mb-0">{{ comment.text }}</p>
-                            </div>
-                        </div>
+                    {% if media.tags.all %}
+                    <h6>Tags:</h6>
+                    <div>
+                        {% for tag in media.tags.all %}
+                        <span class="badge bg-secondary me-1">{{ tag.name }}</span>
+                        {% endfor %}
                     </div>
-                    {% empty %}
-                    <p class="text-muted">No comments yet.</p>
-                    {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-            <!-- Artist Info -->
-            <div class="card border-0 shadow-sm mb-4">
+        <!-- Main Content Area -->
+        <div class="col-md-8">
+            <!-- Title and Description -->
+            <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">About the Artist</h5>
-                    <div class="d-flex align-items-center mb-3">
-                        {% if media.artist.avatar %}
-                        <img src="{{ media.artist.avatar.url }}" class="rounded-circle me-3" width="64" height="64">
-                        {% else %}
-                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3"
-                             style="width: 64px; height: 64px;">
-                            <i class="bi bi-person-fill text-white h3 mb-0"></i>
-                        </div>
-                        {% endif %}
-                        <div>
-                            <h6 class="mb-1">{{ media.artist.get_full_name|default:media.artist.username }}</h6>
-                            <p class="text-muted mb-0">
-                                <i class="bi bi-geo-alt-fill"></i> {{ media.artist.location|default:"Location not specified" }}
-                            </p>
-                        </div>
-                    </div>
-                    <p class="mb-3">{{ media.artist.bio|default:"No bio available"|truncatewords:30 }}</p>
-                    <a href="{% url 'users:artist_profile' media.artist.username %}" class="btn btn-outline-primary btn-sm">
-                        View Profile
-                    </a>
+                    <h1 class="h3 card-title">{{ media.title }}</h1>
+                    {% if media.media_type == 'comic' %}
+                    <h6 class="card-subtitle mb-3 text-muted">Issue #{{ media.issue_number }}</h6>
+                    {% endif %}
+                    <p class="card-text">{{ media.description|linebreaks }}</p>
                 </div>
             </div>
 
-            <!-- Media Stats -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Stats</h5>
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-eye-fill text-primary me-2"></i>
-                                <div>
-                                    <div class="small text-muted">Views</div>
-                                    <strong>{{ media.views }}</strong>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-star-fill text-warning me-2"></i>
-                                <div>
-                                    <div class="small text-muted">Rating</div>
-                                    <strong>{{ media.media_ratings.count }}</strong>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-chat-fill text-info me-2"></i>
-                                <div>
-                                    <div class="small text-muted">Comments</div>
-                                    <strong>{{ media.media_comments.count }}</strong>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-calendar-event text-success me-2"></i>
-                                <div>
-                                    <div class="small text-muted">Published</div>
-                                    <strong>{{ media.created_at|date }}</strong>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Media Content -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Content</h5>
                 </div>
-            </div>
-
-            <!-- Rating Section -->
-            <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title">Rate this Content</h5>
                     {% if user.is_authenticated %}
-                    <form method="post" action="{% url 'media:add_rating' media.id %}">
+                        {% if media.file %}
+                            {% if media.media_type == 'image' %}
+                            <img src="{{ media.file.url }}" class="img-fluid" alt="{{ media.title }}">
+                            {% elif media.media_type == 'video' %}
+                            <video controls class="w-100">
+                                <source src="{{ media.file.url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            {% elif media.media_type == 'audio' %}
+                            <audio controls class="w-100">
+                                <source src="{{ media.file.url }}" type="audio/mpeg">
+                                Your browser does not support the audio tag.
+                            </audio>
+                            {% else %}
+                            <div class="text-center">
+                                <a href="{{ media.file.url }}" class="btn btn-primary" download>
+                                    <i class="bi bi-download me-2"></i>Download File
+                                </a>
+                            </div>
+                            {% endif %}
+                        {% else %}
+                        <p class="text-muted">No content file available.</p>
+                        {% endif %}
+                    {% else %}
+                    <div class="alert alert-info">
+                        Please <a href="{% url 'users:login' %}">sign in</a> to access this content.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Comments</h5>
+                    <span class="badge bg-secondary">{{ media.media_comments.count }}</span>
+                </div>
+                <div class="card-body">
+                    {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'media:add_comment' media.pk %}" class="mb-4">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <select name="rating" class="form-select" required>
-                                <option value="">Select rating...</option>
-                                <option value="1">1 Star</option>
-                                <option value="2">2 Stars</option>
-                                <option value="3">3 Stars</option>
-                                <option value="4">4 Stars</option>
-                                <option value="5">5 Stars</option>
-                            </select>
+                            <label for="comment" class="form-label">Add a comment</label>
+                            <textarea class="form-control" id="comment" name="text" rows="3" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Submit Rating</button>
+                        <button type="submit" class="btn btn-primary">Post Comment</button>
                     </form>
-                    {% else %}
-                    <p class="text-muted">Please <a href="{% url 'users:login' %}">login</a> to rate this content.</p>
                     {% endif %}
+
+                    {% for comment in media.media_comments.all %}
+                    <div class="comment mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>{{ comment.user.username }}</strong>
+                                <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+                            </div>
+                            {% if user == comment.user %}
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-link text-muted" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <form method="post" action="{% url 'media:delete_comment' comment.pk %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="dropdown-item text-danger">Delete</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <p class="mb-0">{{ comment.text }}</p>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No comments yet.</p>
+                    {% endfor %}
                 </div>
             </div>
         </div>

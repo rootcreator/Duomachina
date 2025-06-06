@@ -79,36 +79,13 @@
               <i class="bi bi-grid-3x3-gap me-1"></i>Gallery
             </a>
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="contentDropdown" role="button" 
-               data-bs-toggle="dropdown">
-              <i class="bi bi-collection me-1"></i>Content
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'magazine' %}active{% endif %}" 
+               href="{% url 'media:magazine' %}">
+              <i class="bi bi-journal-richtext me-1"></i>Magazines
             </a>
-                          <ul class="dropdown-menu">
-              <li>
-                <a class="dropdown-item" href="{% url 'media:comics' %}">
-                  <i class="bi bi-book"></i>Comics
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="{% url 'media:magazine' %}">
-                  <i class="bi bi-journal-richtext"></i>Magazines
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="{% url 'media:podcast' %}">
-                  <i class="bi bi-mic"></i>Podcasts
-                </a>
-              </li>
-
-              <li>
-                <a class="dropdown-item" href="{% url 'media:media' %}">
-                  <i class="bi bi-collection"></i>Media
-                </a>
-              </li>
-
-            </ul>
           </li>
+          
         </ul>
         
         <form class="d-flex me-3" action="{% url 'media:search' %}" method="get">
@@ -233,9 +210,7 @@
         <div class="col-lg-2">
           <h6 class="mb-4">Content</h6>
           <ul class="list-unstyled">
-            <li class="mb-2"><a href="{% url 'media:comics' %}" class="footer-link">Comics</a></li>
             <li class="mb-2"><a href="{% url 'media:magazine' %}" class="footer-link">Magazines</a></li>
-            <li class="mb-2"><a href="{% url 'media:podcast' %}" class="footer-link">Podcasts</a></li>
             <li class="mb-2"><a href="{% url 'media:gallery' %}" class="footer-link">Gallery</a></li>
           </ul>
         </div>
