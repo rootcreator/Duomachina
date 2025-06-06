@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Terms of Service{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="display-4 fw-bold mb-4 text-gradient">Terms of Service</h1>
+            <p class="lead mb-5">Please read these terms of service carefully before using DuoMachina.</p>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-4">1. Acceptance of Terms</h2>
+                    <p class="text-muted">By accessing and using DuoMachina, you accept and agree to be bound by the terms and provision of this agreement.</p>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-4">2. User Accounts</h2>
+                    <ul class="text-muted">
+                        <li class="mb-3">You must be at least 13 years old to use this service.</li>
+                        <li class="mb-3">You are responsible for maintaining the security of your account.</li>
+                        <li class="mb-3">You are responsible for all content posted and activity under your account.</li>
+                        <li>You must not use the service for any illegal purposes.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-4">3. Content Guidelines</h2>
+                    <ul class="text-muted">
+                        <li class="mb-3">You retain ownership of any content you post on DuoMachina.</li>
+                        <li class="mb-3">Content must not violate any laws or rights of others.</li>
+                        <li class="mb-3">We reserve the right to remove content that violates our guidelines.</li>
+                        <li>You are responsible for backing up your content.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-4">4. Privacy</h2>
+                    <p class="text-muted">Your use of DuoMachina is also governed by our Privacy Policy. Please review our Privacy Policy, which also governs the site and informs users of our data collection practices.</p>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-4">5. Service Modifications</h2>
+                    <p class="text-muted">We reserve the right to modify or discontinue the service at any time. We shall not be liable to you or any third party for any modification, suspension, or discontinuance of the service.</p>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-4">6. Termination</h2>
+                    <p class="text-muted">We reserve the right to terminate or suspend your account and access to the service at our sole discretion, without notice, for conduct that we believe violates these Terms of Service or is harmful to other users of the service, us, or third parties, or for any other reason.</p>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h4 mb-4">7. Contact Information</h2>
+                    <p class="text-muted mb-0">If you have any questions about these Terms of Service, please contact us at support@duomachina.com.</p>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <p class="text-muted mb-4">Last updated: {% now "F j, Y" %}</p>
+                <a href="{% url 'pages:contact' %}" class="btn btn-primary">
+                    <i class="bi bi-envelope me-2"></i>Contact Us
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

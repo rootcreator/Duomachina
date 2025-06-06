@@ -1,27 +1,217 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Gallery - DuoMachina{% endblock %}
 
 {% block content %}
+<!-- Hero Section -->
+<section class="gallery-hero position-relative mb-5">
+    <div class="container py-5">
+        <div class="row align-items-center py-4">
+            <div class="col-lg-6">
+                <span class="badge bg-primary-subtle text-primary mb-3 animate-in">Welcome to Our Gallery</span>
+                <h1 class="display-4 fw-bold mb-4 animate-in-delay-1 text-gradient">Discover Amazing Digital Content</h1>
+                <p class="lead mb-4 animate-in-delay-2 text-secondary">Explore our curated collection of digital media, featuring comics, magazines, podcasts, and more from talented creators worldwide.</p>
+                <div class="d-flex gap-3 animate-in-delay-3">
+                    <a href="#comics" class="btn btn-primary btn-lg">
+                        <i class="bi bi-book me-2"></i>Start Exploring
+                    </a>
+                    <a href="{% url 'media:media' %}" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-collection me-2"></i>View All Media
+                    </a>
+                </div>
+                <div class="mt-4 d-flex gap-4 animate-in-delay-4">
+                    <div class="hero-stat">
+                        <i class="bi bi-people-fill fs-4 me-2 text-primary"></i>
+                        <div>
+                            <h4 class="h6 mb-0 text-primary">{{ total_creators }}+</h4>
+                            <small class="text-secondary">Creators</small>
+                        </div>
+                    </div>
+                    <div class="hero-stat">
+                        <i class="bi bi-collection-fill fs-4 me-2 text-primary"></i>
+                        <div>
+                            <h4 class="h6 mb-0 text-primary">{{ total_content }}+</h4>
+                            <small class="text-secondary">Content Pieces</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block position-relative">
+                <div class="gallery-hero-image animate-float">
+                    <img src="{% static 'images/gallery-hero.svg' %}" alt="Gallery Illustration" class="img-fluid">
+                    <div class="hero-shape"></div>
+                </div>
+                <div class="position-absolute top-0 end-0 animate-pulse">
+                    <div class="hero-stat-card p-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-eye-fill text-primary fs-4 me-2"></i>
+                            <div>
+                                <h4 class="h6 mb-0 text-primary">{{ total_views }}+</h4>
+                                <small class="text-secondary">Total Views</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="position-absolute bottom-0 start-0 animate-pulse delay-2">
+                    <div class="hero-stat-card p-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-star-fill text-primary fs-4 me-2"></i>
+                            <div>
+                                <h4 class="h6 mb-0 text-primary">{{ avg_rating|floatformat:1 }}</h4>
+                                <small class="text-secondary">Avg Rating</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Navigation Tabs -->
+<div class="container mb-5">
+    <div class="nav-tabs-wrapper bg-white rounded-4 shadow-sm p-3">
+        <ul class="nav nav-tabs nav-fill border-0" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a href="#comics" class="nav-link active px-4" data-bs-toggle="tab" role="tab">
+                    <i class="bi bi-book fs-5 me-2"></i>
+                    <span class="d-none d-sm-inline">Comics</span>
+                    <span class="badge bg-primary ms-2">{{ comics.count }}</span>
+                </a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a href="#magazines" class="nav-link px-4" data-bs-toggle="tab" role="tab">
+                    <i class="bi bi-journal-richtext fs-5 me-2"></i>
+                    <span class="d-none d-sm-inline">Magazines</span>
+                    <span class="badge bg-primary ms-2">{{ magazines.count }}</span>
+                </a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a href="#podcasts" class="nav-link px-4" data-bs-toggle="tab" role="tab">
+                    <i class="bi bi-mic fs-5 me-2"></i>
+                    <span class="d-none d-sm-inline">Podcasts</span>
+                    <span class="badge bg-primary ms-2">{{ podcasts.count }}</span>
+                </a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a href="#media" class="nav-link px-4" data-bs-toggle="tab" role="tab">
+                    <i class="bi bi-collection fs-5 me-2"></i>
+                    <span class="d-none d-sm-inline">Media</span>
+                    <span class="badge bg-primary ms-2">{{ media.count }}</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="container mb-5">
+    <div class="row g-4">
+        <div class="col-6 col-md-3">
+            <div class="stats-card bg-white rounded-4 shadow-sm p-4">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon bg-primary bg-opacity-10 text-primary rounded-3 p-3 me-3">
+                        <i class="bi bi-book fs-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="h5 mb-1">{{ comics.count }}</h3>
+                        <p class="text-muted mb-0">Comics</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stats-card bg-white rounded-4 shadow-sm p-4">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon bg-info bg-opacity-10 text-info rounded-3 p-3 me-3">
+                        <i class="bi bi-journal-richtext fs-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="h5 mb-1">{{ magazines.count }}</h3>
+                        <p class="text-muted mb-0">Magazines</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stats-card bg-white rounded-4 shadow-sm p-4">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon bg-success bg-opacity-10 text-success rounded-3 p-3 me-3">
+                        <i class="bi bi-mic fs-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="h5 mb-1">{{ podcasts.count }}</h3>
+                        <p class="text-muted mb-0">Podcasts</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stats-card bg-white rounded-4 shadow-sm p-4">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon bg-warning bg-opacity-10 text-warning rounded-3 p-3 me-3">
+                        <i class="bi bi-collection fs-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="h5 mb-1">{{ media.count }}</h3>
+                        <p class="text-muted mb-0">Media</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <!-- Comics Section -->
-    <section class="mb-5">
-        <h2 class="mb-4">Comics</h2>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+    <section id="comics" class="content-section mb-6">
+        <div class="section-header position-relative mb-4">
+            <div class="d-flex align-items-center justify-content-between">
+                <h2 class="mb-0 d-flex align-items-center">
+                    <i class="bi bi-book me-3 text-primary"></i>Comics
+                </h2>
+                <a href="{% url 'media:comics' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-grid-3x3-gap me-2"></i>View All Comics
+                </a>
+            </div>
+            <div class="section-line mt-3"></div>
+        </div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
             {% for comic in comics %}
             <div class="col">
-                <div class="card h-100 content-card">
+                <div class="card h-100 content-card border-0 shadow-sm hover-card">
+                    <div class="card-img-wrapper position-relative">
                     {% if comic.cover_image %}
                     <img src="{{ comic.cover_image.url }}" class="card-img-top" alt="{{ comic.title }}">
                     {% else %}
-                    <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
-                        <i class="bi bi-book fs-1"></i>
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center ratio ratio-4x3">
+                            <i class="bi bi-book text-muted display-4"></i>
+                        </div>
+                        {% endif %}
+                        {% if comic.issue_number %}
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-primary">Issue #{{ comic.issue_number }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="card-img-overlay d-flex align-items-end">
+                            <div class="w-100 text-white p-3 overlay-content">
+                                <h5 class="card-title mb-1">{{ comic.title }}</h5>
+                                <p class="card-text small mb-0">By {{ comic.artist.username }}</p>
+                            </div>
+                        </div>
                     </div>
-                    {% endif %}
                     <div class="card-body">
-                        <h5 class="card-title">{{ comic.title }}</h5>
-                        <p class="card-text text-muted">By {{ comic.artist.username }}</p>
-                        <a href="#" class="btn btn-outline-primary btn-sm">Read More</a>
+                        <p class="card-text text-muted small mb-3">{{ comic.description|truncatewords:15 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-eye me-2 text-muted"></i>
+                                <small class="text-muted">{{ comic.views }}</small>
+                            </div>
+                            <a href="{% url 'media:comic_detail' comic.pk %}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-book-half me-1"></i>Read
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -30,25 +220,53 @@
     </section>
 
     <!-- Magazines Section -->
-    <section class="mb-5">
-        <h2 class="mb-4">Magazines</h2>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+    <section id="magazines" class="content-section mb-6">
+        <div class="section-header position-relative mb-4">
+            <div class="d-flex align-items-center justify-content-between">
+                <h2 class="mb-0 d-flex align-items-center">
+                    <i class="bi bi-journal-richtext me-3 text-primary"></i>Magazines
+                </h2>
+                <a href="{% url 'media:magazine' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-grid-3x3-gap me-2"></i>View All Magazines
+                </a>
+            </div>
+            <div class="section-line mt-3"></div>
+        </div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
             {% for magazine in magazines %}
             <div class="col">
-                <div class="card h-100 content-card">
+                <div class="card h-100 content-card border-0 shadow-sm hover-card">
+                    <div class="card-img-wrapper position-relative">
                     {% if magazine.cover_image %}
                     <img src="{{ magazine.cover_image.url }}" class="card-img-top" alt="{{ magazine.title }}">
                     {% else %}
-                    <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
-                        <i class="bi bi-journal-richtext fs-1"></i>
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center ratio ratio-4x3">
+                            <i class="bi bi-journal-richtext text-muted display-4"></i>
+                        </div>
+                        {% endif %}
+                        {% if magazine.issue_number %}
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-primary">Issue #{{ magazine.issue_number }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="card-img-overlay d-flex align-items-end">
+                            <div class="w-100 text-white p-3 overlay-content">
+                                <h5 class="card-title mb-1">{{ magazine.title }}</h5>
+                                <p class="card-text small mb-0">By {{ magazine.author.username }}</p>
+                            </div>
+                        </div>
                     </div>
-                    {% endif %}
                     <div class="card-body">
-                        <h5 class="card-title">{{ magazine.title }}</h5>
-                        <p class="card-text text-muted">{{ magazine.category.name }}</p>
+                        <p class="card-text text-muted small mb-2">{{ magazine.category.name }}</p>
+                        <p class="card-text text-muted small mb-3">{{ magazine.description|truncatewords:15 }}</p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">By {{ magazine.author.username }}</small>
-                            <a href="#" class="btn btn-outline-primary btn-sm">Read More</a>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-eye me-2 text-muted"></i>
+                                <small class="text-muted">{{ magazine.views }}</small>
+                            </div>
+                            <a href="{% url 'media:magazine_detail' magazine.pk %}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-journal-text me-1"></i>Read
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -58,25 +276,52 @@
     </section>
 
     <!-- Podcasts Section -->
-    <section class="mb-5">
-        <h2 class="mb-4">Podcasts</h2>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+    <section id="podcasts" class="content-section mb-6">
+        <div class="section-header position-relative mb-4">
+            <div class="d-flex align-items-center justify-content-between">
+                <h2 class="mb-0 d-flex align-items-center">
+                    <i class="bi bi-mic me-3 text-primary"></i>Podcasts
+                </h2>
+                <a href="{% url 'media:podcast' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-grid-3x3-gap me-2"></i>View All Podcasts
+                </a>
+            </div>
+            <div class="section-line mt-3"></div>
+        </div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
             {% for podcast in podcasts %}
             <div class="col">
-                <div class="card h-100 content-card">
+                <div class="card h-100 content-card border-0 shadow-sm hover-card">
+                    <div class="card-img-wrapper position-relative">
                     {% if podcast.cover_image %}
                     <img src="{{ podcast.cover_image.url }}" class="card-img-top" alt="{{ podcast.title }}">
                     {% else %}
-                    <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
-                        <i class="bi bi-mic fs-1"></i>
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center ratio ratio-4x3">
+                            <i class="bi bi-mic text-muted display-4"></i>
+                        </div>
+                        {% endif %}
+                        {% if podcast.category %}
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-primary">{{ podcast.category.name }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="card-img-overlay d-flex align-items-end">
+                            <div class="w-100 text-white p-3 overlay-content">
+                                <h5 class="card-title mb-1">{{ podcast.title }}</h5>
+                                <p class="card-text small mb-0">By {{ podcast.author.username }}</p>
+                            </div>
+                        </div>
                     </div>
-                    {% endif %}
                     <div class="card-body">
-                        <h5 class="card-title">{{ podcast.title }}</h5>
-                        <p class="card-text text-muted">{{ podcast.category.name }}</p>
+                        <p class="card-text text-muted small mb-3">{{ podcast.description|truncatewords:15 }}</p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">By {{ podcast.author.username }}</small>
-                            <a href="#" class="btn btn-outline-primary btn-sm">Listen</a>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-eye me-2 text-muted"></i>
+                                <small class="text-muted">{{ podcast.views }}</small>
+                            </div>
+                            <a href="{% url 'media:podcast_detail' podcast.pk %}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-play-circle me-1"></i>Listen
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -85,30 +330,64 @@
         </div>
     </section>
 
-    <!-- Other Media Section -->
-    <section class="mb-5">
-        <h2 class="mb-4">Media</h2>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+    <!-- Media Section -->
+    <section id="media" class="content-section mb-6">
+        <div class="section-header position-relative mb-4">
+            <div class="d-flex align-items-center justify-content-between">
+                <h2 class="mb-0 d-flex align-items-center">
+                    <i class="bi bi-collection me-3 text-primary"></i>Media
+                </h2>
+                <a href="{% url 'media:media' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-grid-3x3-gap me-2"></i>View All Media
+                </a>
+            </div>
+            <div class="section-line mt-3"></div>
+        </div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
             {% for item in media %}
             <div class="col">
-                <div class="card h-100 content-card">
-                    {% if item.file %}
-                    <div class="card-img-top bg-dark text-white d-flex align-items-center justify-content-center" style="height: 200px;">
-                        {% if item.file_type == 'video' %}
-                        <i class="bi bi-film fs-1"></i>
-                        {% elif item.file_type == 'audio' %}
-                        <i class="bi bi-music-note-beamed fs-1"></i>
+                <div class="card h-100 content-card border-0 shadow-sm hover-card">
+                    <div class="card-img-wrapper position-relative">
+                        {% if item.cover_image %}
+                        <img src="{{ item.cover_image.url }}" class="card-img-top" alt="{{ item.title }}">
                         {% else %}
-                        <i class="bi bi-file-earmark fs-1"></i>
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center ratio ratio-4x3">
+                            {% if item.media_type == 'video' %}
+                            <i class="bi bi-film text-muted display-4"></i>
+                            {% elif item.media_type == 'audio' %}
+                            <i class="bi bi-music-note-beamed text-muted display-4"></i>
+                            {% elif item.media_type == 'book' %}
+                            <i class="bi bi-book text-muted display-4"></i>
+                            {% elif item.media_type == 'manuscript' %}
+                            <i class="bi bi-file-text text-muted display-4"></i>
+                            {% else %}
+                            <i class="bi bi-image text-muted display-4"></i>
+                            {% endif %}
+                        </div>
                         {% endif %}
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-primary">{{ item.media_type|title }}</span>
+                        </div>
+                        <div class="card-img-overlay d-flex align-items-end">
+                            <div class="w-100 text-white p-3 overlay-content">
+                                <h5 class="card-title mb-1">{{ item.title }}</h5>
+                                <p class="card-text small mb-0">By {{ item.artist.username }}</p>
+                            </div>
+                        </div>
                     </div>
-                    {% endif %}
                     <div class="card-body">
-                        <h5 class="card-title">{{ item.title }}</h5>
-                        <p class="card-text text-muted">{{ item.get_file_type_display }}</p>
+                        <p class="card-text text-muted small mb-3">{{ item.description|truncatewords:15 }}</p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">By {{ item.artist.username }}</small>
-                            <a href="#" class="btn btn-outline-primary btn-sm">View</a>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-eye me-2 text-muted"></i>
+                                <small class="text-muted">{{ item.views }}</small>
+                            </div>
+                            <a href="{% url 'media:media_detail' item.pk %}" class="btn btn-outline-primary btn-sm">
+                                {% if item.media_type == 'video' %}<i class="bi bi-play-circle me-1"></i>Watch
+                                {% elif item.media_type == 'audio' %}<i class="bi bi-music-note me-1"></i>Listen
+                                {% elif item.media_type == 'book' or item.media_type == 'manuscript' %}<i class="bi bi-book-half me-1"></i>Read
+                                {% else %}<i class="bi bi-eye me-1"></i>View{% endif %}
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -117,4 +396,179 @@
         </div>
     </section>
 </div>
+
+{% block extra_css %}
+<style>
+    /* Hero Section */
+    .gallery-hero {
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        min-height: 600px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .text-gradient {
+        background: linear-gradient(45deg, var(--bs-primary) 0%, var(--bs-info) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .hero-stat {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background: var(--bs-primary-bg-subtle);
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .hero-stat-card {
+        background: var(--bs-white);
+        border: 1px solid var(--bs-border-color);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        border-radius: 1rem;
+    }
+    
+    .hero-shape {
+        width: 100%;
+        height: 100%;
+        top: 2rem;
+        right: -2rem;
+        background: var(--bs-primary);
+        opacity: 0.1;
+        border-radius: 1rem;
+        z-index: -1;
+        position: absolute;
+    }
+    
+    /* Section Layout Improvements */
+    .content-section {
+        scroll-margin-top: 2rem;
+        padding: 2.5rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .content-section:last-child {
+        border-bottom: none;
+    }
+    
+    .section-header {
+        background: linear-gradient(to right, rgba(var(--bs-primary-rgb), 0.05), transparent);
+        padding: 1.5rem;
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+        border-left: 4px solid var(--bs-primary);
+    }
+    
+    .section-line {
+        display: none;
+    }
+    
+    /* Grid System Improvements */
+    .row-cols-1 > * {
+        padding: 1rem;
+    }
+    
+    @media (min-width: 576px) {
+        .row-cols-sm-2 > * {
+            padding: 1rem;
+        }
+    }
+    
+    @media (min-width: 768px) {
+        .row-cols-md-3 > * {
+            padding: 1rem;
+        }
+    }
+    
+    @media (min-width: 992px) {
+        .row-cols-lg-4 > * {
+            padding: 1rem;
+        }
+    }
+    
+    @media (min-width: 1200px) {
+        .row-cols-xl-5 > * {
+            padding: 1rem;
+        }
+    }
+    
+    /* Card Improvements */
+    .content-card {
+        margin-bottom: 0;
+        border-radius: 1rem;
+        background: var(--bs-white);
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    
+    .content-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 2rem rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .card-img-wrapper {
+        border-radius: 1rem 1rem 0 0;
+        overflow: hidden;
+    }
+    
+    .card-img-wrapper img {
+        transition: transform 0.3s ease-in-out;
+    }
+    
+    .content-card:hover .card-img-wrapper img {
+        transform: scale(1.05);
+    }
+    
+    .overlay-content {
+        background: linear-gradient(0deg, 
+            rgba(0, 0, 0, 0.8) 0%, 
+            rgba(0, 0, 0, 0.4) 50%,
+            rgba(0, 0, 0, 0) 100%
+        );
+        border-radius: 1rem 1rem 0 0;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .gallery-hero {
+            min-height: auto;
+            padding: 4rem 0;
+        }
+        
+        .hero-stat {
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .content-section {
+            padding: 2rem 0;
+        }
+        
+        .section-header {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize Bootstrap tabs
+    document.addEventListener('DOMContentLoaded', function() {
+        var triggerTabList = [].slice.call(document.querySelectorAll('.nav-tabs a'))
+        triggerTabList.forEach(function(triggerEl) {
+            triggerEl.addEventListener('click', function(e) {
+                e.preventDefault()
+                var targetId = this.getAttribute('href').substring(1)
+                var targetElement = document.getElementById(targetId)
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }
+            })
+        })
+    })
+</script>
+{% endblock %}
 {% endblock %} 

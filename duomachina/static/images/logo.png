@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="50" viewBox="0 0 200 50" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .logo-text { font-family: Arial, sans-serif; font-weight: bold; font-size: 24px; }
+        .primary { fill: #007bff; }
+        .secondary { fill: #6c757d; }
+    </style>
+    <text x="10" y="35" class="logo-text primary">Duo</text>
+    <text x="70" y="35" class="logo-text secondary">Machina</text>
+</svg> 

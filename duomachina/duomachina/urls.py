@@ -10,6 +10,7 @@ urlpatterns = [
     path('api/users/', include('users.urls')),
     path('media/', include('media.urls')),
     path('api/store/', include('store.urls')),
+    path('pages/', include('pages.urls')),  # New URLs
 ]
 
 if settings.DEBUG:

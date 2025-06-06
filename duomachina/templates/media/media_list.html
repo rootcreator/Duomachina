@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Media Gallery{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <h1 class="h2 mb-0">Media Gallery</h1>
+        </div>
+        {% if user.is_artist %}
+        <div class="col-auto">
+            <a href="{% url 'media:create_media' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-2"></i>Upload Media
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Filters Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <!-- Media Type Filter -->
+                <div class="col-md-3">
+                    <label for="type" class="form-label">Media Type</label>
+                    <select name="type" id="type" class="form-select">
+                        <option value="">All Types</option>
+                        {% for type in media_types %}
+                        <option value="{{ type.value }}" {% if type.value == selected_type %}selected{% endif %}>
+                            {{ type.label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Artist Filter -->
+                <div class="col-md-3">
+                    <label for="artist" class="form-label">Artist</label>
+                    <select name="artist" id="artist" class="form-select">
+                        <option value="">All Artists</option>
+                        {% for artist_name in artists %}
+                        <option value="{{ artist_name }}" {% if artist_name == selected_artist %}selected{% endif %}>
+                            {{ artist_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Sort By -->
+                <div class="col-md-3">
+                    <label for="sort" class="form-label">Sort By</label>
+                    <select name="sort" id="sort" class="form-select">
+                        {% for option in sort_options %}
+                        <option value="{{ option.value }}" {% if option.value == selected_sort %}selected{% endif %}>
+                            {{ option.label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Apply Filters Button -->
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-funnel me-2"></i>Apply Filters
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Media Grid -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        {% for item in media_list %}
+        <div class="col">
+            <div class="card h-100 hover-card">
+                <div class="card-img-wrapper position-relative">
+                    {% if item.cover_image %}
+                    <img src="{{ item.cover_image.url }}" class="card-img-top" alt="{{ item.title }}">
+                    {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center ratio ratio-4x3">
+                        {% if item.media_type == 'video' %}
+                        <i class="bi bi-film text-muted display-4"></i>
+                        {% elif item.media_type == 'audio' %}
+                        <i class="bi bi-music-note-beamed text-muted display-4"></i>
+                        {% elif item.media_type == 'book' %}
+                        <i class="bi bi-book text-muted display-4"></i>
+                        {% elif item.media_type == 'manuscript' %}
+                        <i class="bi bi-file-text text-muted display-4"></i>
+                        {% else %}
+                        <i class="bi bi-image text-muted display-4"></i>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    <div class="card-img-overlay d-flex align-items-end">
+                        <div class="w-100 text-white p-3 overlay-content">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-primary">
+                                    {% for type in media_types %}
+                                        {% if type.value == item.media_type %}
+                                            {{ type.label }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <span class="small">
+                                    <i class="bi bi-eye me-1"></i>{{ item.views }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title text-truncate mb-1">{{ item.title }}</h5>
+                    <p class="card-text small text-muted mb-2">by {{ item.artist.username }}</p>
+                    <p class="card-text small text-muted mb-3">{{ item.description|truncatewords:15 }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="rating small">
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <span class="ms-1">{{ item.average_rating|default:"N/A" }}</span>
+                        </div>
+                        <a href="{{ item.get_absolute_url }}" class="btn btn-sm btn-outline-primary">
+                            {% if item.media_type == 'video' %}
+                            <i class="bi bi-play-circle me-1"></i>Watch
+                            {% elif item.media_type == 'audio' %}
+                            <i class="bi bi-music-note me-1"></i>Listen
+                            {% elif item.media_type == 'book' or item.media_type == 'manuscript' %}
+                            <i class="bi bi-book-half me-1"></i>Read
+                            {% else %}
+                            <i class="bi bi-eye me-1"></i>View
+                            {% endif %}
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span><i class="bi bi-calendar me-1"></i>{{ item.created_at|date:"M d, Y" }}</span>
+                        <span><i class="bi bi-chat me-1"></i>{{ item.comment_count }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="bi bi-inbox display-1 text-muted mb-4"></i>
+                <h3>No Media Found</h3>
+                <p class="text-muted">Try adjusting your filters or upload some media.</p>
+                {% if user.is_artist %}
+                <a href="{% url 'media:create_media' %}" class="btn btn-primary mt-3">
+                    <i class="bi bi-plus-lg me-2"></i>Upload Media
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if media_list.has_other_pages %}
+    <nav class="mt-4" aria-label="Media pagination">
+        <ul class="pagination justify-content-center">
+            {% if media_list.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ media_list.previous_page_number }}&type={{ selected_type }}&artist={{ selected_artist }}&sort={{ selected_sort }}">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in media_list.paginator.page_range %}
+            <li class="page-item {% if media_list.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}&type={{ selected_type }}&artist={{ selected_artist }}&sort={{ selected_sort }}">
+                    {{ num }}
+                </a>
+            </li>
+            {% endfor %}
+
+            {% if media_list.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ media_list.next_page_number }}&type={{ selected_type }}&artist={{ selected_artist }}&sort={{ selected_sort }}">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-submit form when select fields change
+    document.querySelectorAll('select[name="type"], select[name="artist"], select[name="sort"]').forEach(select => {
+        select.addEventListener('change', () => {
+            select.closest('form').submit();
+        });
+    });
+</script>
+{% endblock %} 

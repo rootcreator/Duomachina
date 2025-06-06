@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .bg { fill: #007bff; }
+        .fg { fill: white; }
+    </style>
+    <rect class="bg" x="0" y="0" width="32" height="32" rx="8"/>
+    <text x="8" y="24" class="fg" style="font-family: Arial, sans-serif; font-weight: bold; font-size: 20px;">D</text>
+</svg> 

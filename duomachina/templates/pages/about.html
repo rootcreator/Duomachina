@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="display-4 fw-bold mb-4 text-gradient">About DuoMachina</h1>
+            
+            <section class="mb-5">
+                <h2 class="h3 mb-4">Our Story</h2>
+                <p class="lead mb-4">DuoMachina is a vibrant platform dedicated to bringing together creators and enthusiasts of digital content. Our mission is to provide a space where creativity flourishes and artists can share their work with the world.</p>
+                <p class="text-muted">Founded with the vision of making digital content more accessible and engaging, DuoMachina has grown into a community-driven platform that celebrates creativity in all its forms - from comics and magazines to podcasts and various media formats.</p>
+            </section>
+
+            <section class="mb-5">
+                <h2 class="h3 mb-4">What We Offer</h2>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <i class="bi bi-book text-primary fs-3 mb-3"></i>
+                                <h3 class="h5 mb-3">Digital Comics</h3>
+                                <p class="text-muted mb-0">Explore a vast collection of digital comics from talented artists around the world.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <i class="bi bi-journal-richtext text-primary fs-3 mb-3"></i>
+                                <h3 class="h5 mb-3">Digital Magazines</h3>
+                                <p class="text-muted mb-0">Read engaging magazines covering various topics and interests.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <i class="bi bi-mic text-primary fs-3 mb-3"></i>
+                                <h3 class="h5 mb-3">Podcasts</h3>
+                                <p class="text-muted mb-0">Listen to engaging podcasts from creative minds and industry experts.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <i class="bi bi-collection text-primary fs-3 mb-3"></i>
+                                <h3 class="h5 mb-3">Digital Media</h3>
+                                <p class="text-muted mb-0">Discover a diverse range of digital content in various formats.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-5">
+                <h2 class="h3 mb-4">Our Values</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <i class="bi bi-stars text-primary fs-1 mb-3"></i>
+                            <h3 class="h5">Creativity</h3>
+                            <p class="text-muted">We believe in nurturing and celebrating creative expression.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <i class="bi bi-people text-primary fs-1 mb-3"></i>
+                            <h3 class="h5">Community</h3>
+                            <p class="text-muted">Building meaningful connections between creators and audiences.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <i class="bi bi-shield-check text-primary fs-1 mb-3"></i>
+                            <h3 class="h5">Quality</h3>
+                            <p class="text-muted">Maintaining high standards in content and user experience.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="text-center py-5">
+                <h2 class="h3 mb-4">Join Our Community</h2>
+                <p class="lead mb-4">Whether you're a creator or an enthusiast, there's a place for you at DuoMachina.</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{% url 'users:register' %}" class="btn btn-primary">
+                        <i class="bi bi-person-plus me-2"></i>Join as User
+                    </a>
+                    <a href="{% url 'users:artist_register' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-brush me-2"></i>Join as Creator
+                    </a>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %} 

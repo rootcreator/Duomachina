@@ -25,6 +25,7 @@ urlpatterns = [
     path('comics/', views.comics, name='comics'),
     path('magazine/', views.magazine, name='magazine'),
     path('podcast/', views.podcast, name='podcast'),
+    path('media/', views.media, name='media'),
     path('search/', views.search, name='search'),
     path('create/', views.create_content, name='create_content'),
     path('create/comic/', views.create_comic, name='create_comic'),

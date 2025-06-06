@@ -1,0 +1,84 @@
+/* Card Components */
+.content-card {
+    border: none;
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+.content-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Category Cards */
+.category-card {
+    border: none;
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+}
+
+.category-overlay {
+    background: rgba(0, 0, 0, 0.5);
+    transition: background 0.3s;
+}
+
+.category-card:hover .category-overlay {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+/* Section Headers */
+.section-header {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.section-header::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0;
+    width: 3rem;
+    height: 0.25rem;
+    background: #3498db;
+    border-radius: 0.25rem;
+}
+
+/* Grid Layouts */
+.masonry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-gap: 1.5rem;
+    grid-auto-flow: dense;
+}
+
+.masonry-item {
+    break-inside: avoid;
+    margin-bottom: 1.5rem;
+}
+
+/* Media Display */
+.media-preview {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Carousel Styles */
+.carousel-caption {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+
+/* Utility Classes */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+}
+
+.text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+} 

@@ -11,19 +11,58 @@ from .serializers import (
     ComicSerializer, MagazineSerializer, PodcastSerializer,
     MagazineCategorySerializer, PodcastCategorySerializer
 )
-from django.db.models import Count
+from django.db.models import Count, Avg, Sum
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator
+from django.db import models
 
 
 def home(request):
     """Home page view showing featured content and recent uploads."""
+    # Get featured and latest content
+    featured_media = Media.objects.filter(status='published').order_by('-views')[:6]
+    latest_comics = Comic.objects.select_related('artist').order_by('-created_at')[:4]
+    latest_magazines = Magazine.objects.select_related('author').order_by('-created_at')[:4]
+    latest_podcasts = Podcast.objects.select_related('author').order_by('-created_at')[:4]
+    latest_media = Media.objects.select_related('artist').order_by('-created_at')[:4]
+
+    # Define sections for the template
+    sections = [
+        {
+            'title': 'Comics',
+            'items': latest_comics,
+            'url': reverse('media:comics'),
+            'icon': 'bi-book',
+            'action_text': 'Read'
+        },
+        {
+            'title': 'Magazines',
+            'items': latest_magazines,
+            'url': reverse('media:magazine'),
+            'icon': 'bi-journal-richtext',
+            'action_text': 'Read'
+        },
+        {
+            'title': 'Podcasts',
+            'items': latest_podcasts,
+            'url': reverse('media:podcast'),
+            'icon': 'bi-mic',
+            'action_text': 'Listen'
+        },
+        {
+            'title': 'Media',
+            'items': latest_media,
+            'url': reverse('media:media'),
+            'icon': 'bi-collection',
+            'action_text': 'View'
+        }
+    ]
+
     context = {
-        'featured_media': Media.objects.filter(status='published').order_by('-views')[:6],
-        'latest_comics': Comic.objects.order_by('-created_at')[:4],
-        'latest_magazines': Magazine.objects.order_by('-created_at')[:4],
-        'latest_podcasts': Podcast.objects.order_by('-created_at')[:4],
+        'featured_media': featured_media,
+        'sections': sections,
     }
     return render(request, 'media/home.html', context)
 
@@ -33,11 +72,42 @@ def gallery(request):
     podcasts = Podcast.objects.select_related('author', 'category').prefetch_related('tags').all()
     media = Media.objects.select_related('artist').all()
 
+    # Calculate total unique creators
+    creators = set()
+    creators.update(comics.values_list('artist__username', flat=True))
+    creators.update(magazines.values_list('author__username', flat=True))
+    creators.update(podcasts.values_list('author__username', flat=True))
+    creators.update(media.values_list('artist__username', flat=True))
+    total_creators = len(creators)
+
+    # Calculate total content pieces
+    total_content = comics.count() + magazines.count() + podcasts.count() + media.count()
+
+    # Calculate total views
+    total_views = sum([
+        comics.aggregate(total=models.Sum('views'))['total'] or 0,
+        magazines.aggregate(total=models.Sum('views'))['total'] or 0,
+        podcasts.aggregate(total=models.Sum('views'))['total'] or 0,
+        media.aggregate(total=models.Sum('views'))['total'] or 0
+    ])
+
+    # Calculate average rating
+    all_ratings = []
+    all_ratings.extend(Rating.objects.filter(comic__in=comics).values_list('rating', flat=True))
+    all_ratings.extend(Rating.objects.filter(magazine__in=magazines).values_list('rating', flat=True))
+    all_ratings.extend(Rating.objects.filter(podcast__in=podcasts).values_list('rating', flat=True))
+    all_ratings.extend(Rating.objects.filter(media__in=media).values_list('rating', flat=True))
+    avg_rating = sum(all_ratings) / len(all_ratings) if all_ratings else 0
+
     context = {
         'comics': comics,
         'magazines': magazines,
         'podcasts': podcasts,
         'media': media,
+        'total_creators': total_creators,
+        'total_content': total_content,
+        'total_views': total_views,
+        'avg_rating': avg_rating,
     }
     return render(request, 'media/gallery.html', context)
 
@@ -216,6 +286,74 @@ def comic_detail(request, pk):
         'ratings': comic.comic_ratings.select_related('user'),
     }
     return render(request, 'media/comic_detail.html', context)
+
+def media(request):
+    """View for displaying media with optional filtering."""
+    media = Media.objects.select_related('artist').order_by('-created_at')
+    
+    # Get filter parameters
+    artist = request.GET.get('artist')
+    media_type = request.GET.get('type')
+    sort_by = request.GET.get('sort', '-created_at')  # Default sort by newest
+    
+    # Apply filters
+    if artist:
+        media = media.filter(artist__username=artist)
+    
+    if media_type:
+        media = media.filter(media_type=media_type)
+    
+    # Apply sorting
+    valid_sort_fields = {
+        'newest': '-created_at',
+        'oldest': 'created_at',
+        'title_asc': 'title',
+        'title_desc': '-title',
+        'most_viewed': '-views',
+        'most_rated': '-rating_count'
+    }
+    
+    if sort_by in valid_sort_fields:
+        media = media.order_by(valid_sort_fields[sort_by])
+    
+    # Add annotations for average rating and comment count
+    media = media.annotate(
+        average_rating=Avg('media_ratings__rating'),
+        rating_count=Count('media_ratings'),
+        comment_count=Count('media_comments')
+    )
+    
+    # Pagination
+    paginator = Paginator(media, 12)  # Show 12 items per page
+    page = request.GET.get('page')
+    media_list = paginator.get_page(page)
+    
+    # Get unique artists for filter dropdown
+    artists = Media.objects.values_list('artist__username', flat=True).distinct()
+    
+    # Get media types from model choices
+    media_types = [
+        {'value': type_value, 'label': type_label}
+        for type_value, type_label in Media.MEDIA_TYPE_CHOICES
+    ]
+    
+    context = {
+        'media_list': media_list,
+        'artists': artists,
+        'media_types': media_types,
+        'selected_artist': artist,
+        'selected_type': media_type,
+        'selected_sort': sort_by,
+        'sort_options': [
+            {'value': 'newest', 'label': 'Newest First'},
+            {'value': 'oldest', 'label': 'Oldest First'},
+            {'value': 'title_asc', 'label': 'Title (A-Z)'},
+            {'value': 'title_desc', 'label': 'Title (Z-A)'},
+            {'value': 'most_viewed', 'label': 'Most Viewed'},
+            {'value': 'most_rated', 'label': 'Most Rated'}
+        ]
+    }
+    return render(request, 'media/media_list.html', context)
 
 def media_detail(request, pk):
     """View for displaying individual media details."""
